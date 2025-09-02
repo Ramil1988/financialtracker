@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Financial Tracker</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+        font-size: 2.5em;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .summary-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+      }
+
+      .card {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+      }
+
+      .card h3 {
+        color: #555;
+        font-size: 0.9em;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+
+      .card .amount {
+        font-size: 1.8em;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .positive {
+        color: #27ae60;
+      }
+      .negative {
+        color: #e74c3c;
+      }
+
+      .section {
+        margin-bottom: 30px;
+      }
+
+      .section-title {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 15px;
+        border-radius: 10px 10px 0 0;
+        font-size: 1.3em;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      th {
+        background: #f8f9fa;
+        font-weight: 600;
+        color: #555;
+      }
+
+      tr:hover {
+        background: #f8f9fa;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+      }
+
+      input[type="number"] {
+        text-align: right;
+      }
+
+      .btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: opacity 0.3s;
+      }
+
+      .btn:hover {
+        opacity: 0.9;
+      }
+
+      .btn-delete {
+        background: #e74c3c;
+        padding: 5px 10px;
+      }
+
+      .chart-container {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        margin-top: 30px;
+      }
+
+      #netWorthChart {
+        max-width: 100%;
+        height: 300px;
+      }
+
+      .date-selector {
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .date-selector input {
+        margin: 0 10px;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+      }
+
+      .export-btn {
+        background: #27ae60;
+        margin-left: 10px;
+      }
+
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 30px;
+      }
+
+      .metric-box {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .metric-box h3 {
+        color: #667eea;
+        margin-bottom: 15px;
+      }
+
+      .metric-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 20px;
+        background: #e0e0e0;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 10px;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        transition: width 0.5s ease;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>💰 Financial Tracker</h1>
+
+      <div class="date-selector">
+        <label>Record Date:</label>
+        <input type="date" id="recordDate" value="" />
+        <button class="btn" onclick="saveSnapshot()">
+          💾 Save Snapshot
+        </button>
+        <button class="btn export-btn" onclick="exportToExcel()">
+          📊 Export to Excel
+        </button>
+      </div>
+
+      <div class="summary-cards">
+        <div class="card">
+          <h3>Total Assets</h3>
+          <div class="amount positive" id="totalAssets">CAD $0</div>
+        </div>
+        <div class="card">
+          <h3>Total Liabilities</h3>
+          <div class="amount negative" id="totalLiabilities">CAD $0</div>
+        </div>
+        <div class="card">
+          <h3>Net Worth</h3>
+          <div class="amount" id="netWorth">CAD $0</div>
+        </div>
+        <div class="card">
+          <h3>Debt-to-Assets Ratio</h3>
+          <div class="amount" id="debtRatio">0%</div>
+        </div>
+        <div class="card">
+          <h3>Period Change</h3>
+          <div class="amount" id="periodChange">CAD $0</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">
+          <span>📈 Assets</span>
+          <button class="btn" onclick="addAssetRow()">+ Add Asset</button>
+        </div>
+        <table id="assetsTable">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Name</th>
+              <th>Amount (CAD $)</th>
+              <th>% of Assets</th>
+              <th>Note</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <select>
+                  <option>Cash</option>
+                  <option>Bank Account</option>
+                  <option>Investments</option>
+                  <option>Real Estate</option>
+                  <option>Vehicle</option>
+                  <option>RRSP</option>
+                  <option>TFSA</option>
+                  <option>Other</option>
+                </select>
+              </td>
+              <td><input type="text" value="Working Cash" /></td>
+              <td>
+                <input
+                  type="number"
+                  value="4000"
+                  onchange="calculateTotals()"
+                />
+              </td>
+              <td class="percentage">0%</td>
+              <td><input type="text" value="Do not touch" /></td>
+              <td>
+                <button class="btn btn-delete" onclick="deleteRow(this)">
+                  Delete
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <select>
+                  <option>Cash</option>
+                  <option>Bank Account</option>
+                  <option>Investments</option>
+                  <option>Real Estate</option>
+                  <option>Vehicle</option>
+                  <option>RRSP</option>
+                  <option>TFSA</option>
+                  <option>Other</option>
+                </select>
+              </td>
+              <td><input type="text" value="Reserve Cash" /></td>
+              <td>
+                <input
+                  type="number"
+                  value="10000"
+                  onchange="calculateTotals()"
+                />
+              </td>
+              <td class="percentage">0%</td>
+              <td><input type="text" value="Emergency Fund" /></td>
+              <td>
+                <button class="btn btn-delete" onclick="deleteRow(this)">
+                  Delete
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <select>
+                  <option>Cash</option>
+                  <option>Bank Account</option>
+                  <option>Investments</option>
+                  <option>Real Estate</option>
+                  <option>Vehicle</option>
+                  <option selected>RRSP</option>
+                  <option>TFSA</option>
+                  <option>Other</option>
+                </select>
+              </td>
+              <td><input type="text" value="RRSP Accounts" /></td>
+              <td>
+                <input
+                  type="number"
+                  value="15000"
+                  onchange="calculateTotals()"
+                />
+              </td>
+              <td class="percentage">0%</td>
+              <td><input type="text" value="Retirement Savings" /></td>
+              <td>
+                <button class="btn btn-delete" onclick="deleteRow(this)">
+                  Delete
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <select>
+                  <option>Cash</option>
+                  <option>Bank Account</option>
+                  <option>Investments</option>
+                  <option selected>Real Estate</option>
+                  <option>Vehicle</option>
+                  <option>RRSP</option>
+                  <option>TFSA</option>
+                  <option>Other</option>
+                </select>
+              </td>
+              <td><input type="text" value="House" /></td>
+              <td>
+                <input
+                  type="number"
+                  value="320000"
+                  onchange="calculateTotals()"
+                />
+              </td>
+              <td class="percentage">0%</td>
+              <td><input type="text" value="Primary Residence" /></td>
+              <td>
+                <button class="btn btn-delete" onclick="deleteRow(this)">
+                  Delete
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <select>
+                  <option>Cash</option>
+                  <option>Bank Account</option>
+                  <option>Investments</option>
+                  <option>Real Estate</option>
+                  <option selected>Vehicle</option>
+                  <option>RRSP</option>
+                  <option>TFSA</option>
+                  <option>Other</option>
+                </select>
+              </td>
+              <td><input type="text" value="Car" /></td>
+              <td>
+                <input
+                  type="number"
+                  value="35000"
+                  onchange="calculateTotals()"
+                />
+              </td>
+              <td class="percentage">0%</td>
+              <td><input type="text" value="" /></td>
+              <td>
+                <button class="btn btn-delete" onclick="deleteRow(this)">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section">
+        <div class="section-title">
+          <span>📉 Debts and Liabilities</span>
+          <button class="btn" onclick="addLiabilityRow()">
+            + Add Debt
+          </button>
+        </div>
+        <table id="liabilitiesTable">
+          <thead>
+            <tr>
+              <th>Debt Type</th>
+              <th>Creditor</th>
+              <th>Outstanding Balance (CAD $)</th>
+              <th>Monthly Payment</th>
+              <th>Interest Rate</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <select>
+                  <option selected>Mortgage</option>
+                  <option>Car Loan</option>
+                  <option>Personal Loan</option>
+                  <option>Credit Card</option>
+                  <option>Private Loan</option>
+                  <option>Other</option>
+                </select>
+              </td>
+              <td><input type="text" value="Primary Mortgage" /></td>
+              <td>
+                <input
+                  type="number"
+                  value="210000"
+                  onchange="calculateTotals()"
+                />
+              </td>
+              <td><input type="number" placeholder="0" /></td>
+              <td><input type="text" placeholder="%" /></td>
+              <td>
+                <button class="btn btn-delete" onclick="deleteRow(this)">
+                  Delete
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <select>
+                  <option>Mortgage</option>
+                  <option selected>Car Loan</option>
+                  <option>Personal Loan</option>
+                  <option>Credit Card</option>
+                  <option>Private Loan</option>
+                  <option>Other</option>
+                </select>
+              </td>
+              <td><input type="text" value="Car Loan" /></td>
+              <td>
+                <input
+                  type="number"
+                  value="39000"
+                  onchange="calculateTotals()"
+                />
+              </td>
+              <td><input type="number" placeholder="0" /></td>
+              <td><input type="text" placeholder="%" /></td>
+              <td>
+                <button class="btn btn-delete" onclick="deleteRow(this)">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="metric-box">
+          <h3>📊 Key Metrics</h3>
+          <div class="metric-item">
+            <span>Home Equity:</span>
+            <span id="homeEquity">CAD $0</span>
+          </div>
+          <div class="metric-item">
+            <span>Liquid Assets:</span>
+            <span id="liquidAssets">CAD $0</span>
+          </div>
+          <div class="metric-item">
+            <span>Investments (RRSP/TFSA):</span>
+            <span id="investments">CAD $0</span>
+          </div>
+          <div class="metric-item">
+            <span>Total Debt:</span>
+            <span id="totalDebt">CAD $0</span>
+          </div>
+        </div>
+
+        <div class="metric-box">
+          <h3>🎯 Debt Repayment Progress</h3>
+          <div>
+            <div class="metric-item">
+              <span>Mortgage Paid:</span>
+              <span id="mortgageProgress">0%</span>
+            </div>
+            <div class="progress-bar">
+              <div
+                class="progress-fill"
+                id="mortgageBar"
+                style="width: 0%"
+              ></div>
+            </div>
+          </div>
+          <div style="margin-top: 15px">
+            <div class="metric-item">
+              <span>Car Loan Paid:</span>
+              <span id="autoProgress">0%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="autoBar" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <h2>📊 Net Worth Trend</h2>
+        <canvas id="netWorthChart"></canvas>
+      </div>
+    </div>
+
+    <script>
+      // Установка текущей даты
+      document.getElementById("recordDate").value = new Date()
+        .toISOString()
+        .split("T")[0];
+
+      // Хранилище данных
+      let financialData = JSON.parse(
+        localStorage.getItem("financialData") || '{"snapshots": []}'
+      );
+
+      function formatCAD(amount) {
+        return (
+          "CAD $" +
+          Math.abs(amount).toLocaleString("en-CA", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          })
+        );
+      }
+
+      function addAssetRow() {
+        const tbody = document.querySelector("#assetsTable tbody");
+        const newRow = tbody.insertRow();
+        newRow.innerHTML = `
+                <td>
+                    <select>
+                        <option>Cash</option>
+                        <option>Bank Account</option>
+                        <option>Investments</option>
+                        <option>Real Estate</option>
+                        <option>Vehicle</option>
+                        <option>RRSP</option>
+                        <option>TFSA</option>
+                        <option>Other</option>
+                    </select>
+                </td>
+                <td><input type="text" placeholder="Name"></td>
+                <td><input type="number" placeholder="0" onchange="calculateTotals()"></td>
+                <td class="percentage">0%</td>
+                <td><input type="text" placeholder="Note"></td>
+                <td><button class="btn btn-delete" onclick="deleteRow(this)">Delete</button></td>
+            `;
+      }
+
+      function addLiabilityRow() {
+        const tbody = document.querySelector("#liabilitiesTable tbody");
+        const newRow = tbody.insertRow();
+        newRow.innerHTML = `
+                <td>
+                    <select>
+                        <option>Mortgage</option>
+                        <option>Car Loan</option>
+                        <option>Personal Loan</option>
+                        <option>Credit Card</option>
+                        <option>Private Loan</option>
+                        <option>Other</option>
+                    </select>
+                </td>
+                <td><input type="text" placeholder="Bank/Creditor Name"></td>
+                <td><input type="number" placeholder="0" onchange="calculateTotals()"></td>
+                <td><input type="number" placeholder="0"></td>
+                <td><input type="text" placeholder="%"></td>
+                <td><button class="btn btn-delete" onclick="deleteRow(this)">Delete</button></td>
+            `;
+      }
+
+      function deleteRow(btn) {
+        btn.closest("tr").remove();
+        calculateTotals();
+      }
+
+      function calculateTotals() {
+        // Подсчет активов
+        let totalAssets = 0;
+        let liquidAssets = 0;
+        let investments = 0;
+        let homeValue = 0;
+
+        const assetRows = document.querySelectorAll("#assetsTable tbody tr");
+        assetRows.forEach((row) => {
+          const category = row.cells[0].querySelector("select").value;
+          const amount =
+            parseFloat(row.cells[2].querySelector("input").value) || 0;
+          totalAssets += amount;
+
+          // Подсчет ликвидных активов
+          if (category === "Cash" || category === "Bank Account") {
+            liquidAssets += amount;
+          }
+
+          // Подсчет инвестиций
+          if (
+            category === "RRSP" ||
+            category === "TFSA" ||
+            category === "Investments"
+          ) {
+            investments += amount;
+          }
+
+          // Стоимость дома
+          if (category === "Real Estate") {
+            homeValue += amount;
+          }
+
+          // Обновление процентов
+          if (totalAssets > 0) {
+            row.cells[3].textContent =
+              ((amount / totalAssets) * 100).toFixed(1) + "%";
+          }
+        });
+
+        // Подсчет долгов
+        let totalLiabilities = 0;
+        let mortgageDebt = 0;
+        let autoDebt = 0;
+
+        const liabilityRows = document.querySelectorAll(
+          "#liabilitiesTable tbody tr"
+        );
+        liabilityRows.forEach((row) => {
+          const type = row.cells[0].querySelector("select").value;
+          const amount =
+            parseFloat(row.cells[2].querySelector("input").value) || 0;
+          totalLiabilities += amount;
+
+          if (type === "Mortgage") {
+            mortgageDebt += amount;
+          }
+          if (type === "Car Loan") {
+            autoDebt += amount;
+          }
+        });
+
+        // Расчет чистого состояния
+        const netWorth = totalAssets - totalLiabilities;
+        const debtRatio =
+          totalAssets > 0 ? (totalLiabilities / totalAssets) * 100 : 0;
+
+        // Расчет equity в доме
+        const homeEquity = homeValue - mortgageDebt;
+
+        // Обновление отображения основных показателей
+        document.getElementById("totalAssets").textContent =
+          formatCAD(totalAssets);
+        document.getElementById("totalLiabilities").textContent =
+          formatCAD(totalLiabilities);
+        document.getElementById("netWorth").textContent = formatCAD(netWorth);
+        document.getElementById("netWorth").className =
+          netWorth >= 0 ? "amount positive" : "amount negative";
+        document.getElementById("debtRatio").textContent =
+          debtRatio.toFixed(1) + "%";
+        document.getElementById("debtRatio").className =
+          debtRatio > 60 ? "amount negative" : "amount positive";
+
+        // Обновление метрик
+        document.getElementById("homeEquity").textContent =
+          formatCAD(homeEquity);
+        document.getElementById("liquidAssets").textContent =
+          formatCAD(liquidAssets);
+        document.getElementById("investments").textContent =
+          formatCAD(investments);
+        document.getElementById("totalDebt").textContent =
+          formatCAD(totalLiabilities);
+
+        // Прогресс погашения ипотеки (предполагаем изначальную сумму)
+        if (homeValue > 0) {
+          const mortgageProgress =
+            ((homeValue - mortgageDebt) / homeValue) * 100;
+          document.getElementById("mortgageProgress").textContent =
+            mortgageProgress.toFixed(1) + "%";
+          document.getElementById("mortgageBar").style.width =
+            mortgageProgress + "%";
+        }
+
+        // Прогресс погашения автокредита (предполагаем, что машина стоила примерно столько же)
+        const carValue = 35000; // текущая стоимость
+        const originalCarLoan = 50000; // предполагаемая изначальная стоимость
+        if (autoDebt > 0) {
+          const autoProgress =
+            ((originalCarLoan - autoDebt) / originalCarLoan) * 100;
+          document.getElementById("autoProgress").textContent =
+            autoProgress.toFixed(1) + "%";
+          document.getElementById("autoBar").style.width = autoProgress + "%";
+        }
+
+        // Расчет изменения за период
+        if (financialData.snapshots.length > 0) {
+          const lastSnapshot =
+            financialData.snapshots[financialData.snapshots.length - 1];
+          const change = netWorth - lastSnapshot.netWorth;
+          document.getElementById("periodChange").textContent =
+            (change >= 0 ? "+" : "") + formatCAD(change);
+          document.getElementById("periodChange").className =
+            change >= 0 ? "amount positive" : "amount negative";
+        }
+      }
+
+      function saveSnapshot() {
+        const date = document.getElementById("recordDate").value;
+        if (!date) {
+          alert("Please select a date");
+          return;
+        }
+
+        // Сбор данных активов
+        const assets = [];
+        const assetRows = document.querySelectorAll("#assetsTable tbody tr");
+        assetRows.forEach((row) => {
+          const category = row.cells[0].querySelector("select").value;
+          const name = row.cells[1].querySelector("input").value;
+          const amount =
+            parseFloat(row.cells[2].querySelector("input").value) || 0;
+          const note = row.cells[4].querySelector("input").value;
+          if (name && amount > 0) {
+            assets.push({ category, name, amount, note });
+          }
+        });
+
+        // Сбор данных долгов
+        const liabilities = [];
+        const liabilityRows = document.querySelectorAll(
+          "#liabilitiesTable tbody tr"
+        );
+        liabilityRows.forEach((row) => {
+          const type = row.cells[0].querySelector("select").value;
+          const creditor = row.cells[1].querySelector("input").value;
+          const amount =
+            parseFloat(row.cells[2].querySelector("input").value) || 0;
+          const payment =
+            parseFloat(row.cells[3].querySelector("input").value) || 0;
+          const rate = row.cells[4].querySelector("input").value;
+          if (creditor && amount > 0) {
+            liabilities.push({ type, creditor, amount, payment, rate });
+          }
+        });
+
+        // Расчет итогов
+        const totalAssets = assets.reduce((sum, item) => sum + item.amount, 0);
+        const totalLiabilities = liabilities.reduce(
+          (sum, item) => sum + item.amount,
+          0
+        );
+        const netWorth = totalAssets - totalLiabilities;
+
+        // Сохранение снимка
+        const snapshot = {
+          date,
+          assets,
+          liabilities,
+          totalAssets,
+          totalLiabilities,
+          netWorth,
+        };
+
+        financialData.snapshots.push(snapshot);
+        localStorage.setItem("financialData", JSON.stringify(financialData));
+
+        alert("Data saved successfully!");
+        updateChart();
+      }
+
+      function updateChart() {
+        const canvas = document.getElementById("netWorthChart");
+        const ctx = canvas.getContext("2d");
+
+        if (financialData.snapshots.length === 0) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.fillText(
+            "No data to display",
+            canvas.width / 2 - 70,
+            canvas.height / 2
+          );
+          return;
+        }
+
+        // Простая визуализация графика
+        const snapshots = financialData.snapshots.slice(-12); // Последние 12 записей
+        const maxValue = Math.max(...snapshots.map((s) => s.netWorth));
+        const minValue = Math.min(...snapshots.map((s) => s.netWorth));
+        const range = maxValue - minValue || 1;
+
+        canvas.width = canvas.offsetWidth;
+        canvas.height = 300;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = "#667eea";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+
+        snapshots.forEach((snapshot, index) => {
+          const x = (index / (snapshots.length - 1)) * (canvas.width - 40) + 20;
+          const y =
+            canvas.height -
+            (((snapshot.netWorth - minValue) / range) * (canvas.height - 40) +
+              20);
+
+          if (index === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+
+          // Точка
+          ctx.fillStyle = "#667eea";
+          ctx.beginPath();
+          ctx.arc(x, y, 4, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Подпись даты
+          ctx.fillStyle = "#666";
+          ctx.font = "10px Arial";
+          ctx.save();
+          ctx.translate(x, canvas.height - 5);
+          ctx.rotate(-Math.PI / 4);
+          ctx.fillText(snapshot.date, 0, 0);
+          ctx.restore();
+        });
+
+        ctx.stroke();
+      }
+
+      function exportToExcel() {
+        // Создание детального CSV для экспорта
+        let csv = "Financial Tracker Export\n\n";
+
+        // Текущее состояние
+        csv += "CURRENT SNAPSHOT\n";
+        csv += "Date," + document.getElementById("recordDate").value + "\n\n";
+
+        // Активы
+        csv += "ASSETS\n";
+        csv += "Category,Name,Amount (CAD),Notes\n";
+        const assetRows = document.querySelectorAll("#assetsTable tbody tr");
+        assetRows.forEach((row) => {
+          const category = row.cells[0].querySelector("select").value;
+          const name = row.cells[1].querySelector("input").value;
+          const amount = row.cells[2].querySelector("input").value || 0;
+          const note = row.cells[4].querySelector("input").value;
+          csv += `${category},${name},${amount},${note}\n`;
+        });
+
+        csv += "\nLIABILITIES\n";
+        csv += "Type,Creditor,Balance (CAD),Monthly Payment,Interest Rate\n";
+        const liabilityRows = document.querySelectorAll(
+          "#liabilitiesTable tbody tr"
+        );
+        liabilityRows.forEach((row) => {
+          const type = row.cells[0].querySelector("select").value;
+          const creditor = row.cells[1].querySelector("input").value;
+          const amount = row.cells[2].querySelector("input").value || 0;
+          const payment = row.cells[3].querySelector("input").value || 0;
+          const rate = row.cells[4].querySelector("input").value;
+          csv += `${type},${creditor},${amount},${payment},${rate}\n`;
+        });
+
+        csv += "\nHISTORICAL DATA\n";
+        csv += "Date,Total Assets,Total Liabilities,Net Worth\n";
+        financialData.snapshots.forEach((snapshot) => {
+          csv += `${snapshot.date},${snapshot.totalAssets},${snapshot.totalLiabilities},${snapshot.netWorth}\n`;
+        });
+
+        // Скачивание файла
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download =
+          "financial_tracker_" +
+          new Date().toISOString().split("T")[0] +
+          ".csv";
+        link.click();
+      }
+
+      // Инициализация
+      calculateTotals();
+      updateChart();
+    </script>
+  </body>
+</html>
