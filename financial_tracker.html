@@ -583,7 +583,7 @@
     <script>
       // Lazy-load Auth0 SPA SDK to avoid race conditions
       async function loadAuth0Sdk() {
-        if (window.createAuth0Client) return;
+        if (window.auth0 && window.auth0.createAuth0Client) return;
         await new Promise((resolve, reject) => {
           const s = document.createElement("script");
           s.src = "https://cdn.auth0.com/js/auth0-spa-js/2.1/auth0-spa-js.production.js";
@@ -626,7 +626,8 @@
 
       async function initAuth() {
         await loadAuth0Sdk();
-        auth0Client = await createAuth0Client({
+        const createClient = (window.auth0 && window.auth0.createAuth0Client) || window.createAuth0Client;
+        auth0Client = await createClient({
           domain: authConfig.domain,
           clientId: authConfig.clientId,
           authorizationParams: {
