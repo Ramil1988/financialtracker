@@ -169,6 +169,11 @@
         opacity: 0.9;
       }
 
+      .btn[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
       .btn-delete {
         background: #e74c3c;
         padding: 5px 10px;
@@ -291,6 +296,9 @@
       <h1>💰 Financial Tracker</h1>
       <p>Sign in to start tracking your assets, debts, and net worth.</p>
       <button id="btn-login" class="btn">🔐 Sign in with Auth0</button>
+      <div style="margin-top:12px">
+        <button id="btn-guest" class="btn" style="background:#27ae60">🧪 Continue without Login</button>
+      </div>
     </div>
 
     <div id="app-container" class="container hidden">
@@ -303,8 +311,8 @@
         <input type="text" id="compareDate" value="" placeholder="YYYY-MM-DD" />
         <span style="margin:0 10px; color:#555" id="user-info"></span>
         <button id="btn-logout" class="btn" style="background:#555">🚪 Logout</button>
-        <button class="btn" onclick="loadSnapshot()">🔄 Load Snapshot</button>
-        <button class="btn" onclick="saveSnapshot()">
+        <button id="btn-load" class="btn" onclick="loadSnapshot()">🔄 Load Snapshot</button>
+        <button id="btn-save" class="btn" onclick="saveSnapshot()">
           💾 Save Snapshot
         </button>
         
@@ -628,6 +636,7 @@
       };
 
       let auth0Client;
+      let GUEST_MODE = false;
 
       async function updateUI() {
         const isAuth = await auth0Client.isAuthenticated();
@@ -687,6 +696,8 @@
         document.getElementById("btn-login").addEventListener("click", () => {
           auth0Client.loginWithRedirect();
         });
+        const guestBtn = document.getElementById("btn-guest");
+        if (guestBtn) guestBtn.addEventListener("click", enterGuestMode);
         document.getElementById("btn-logout").addEventListener("click", () => {
           try { localStorage.removeItem("financialData"); } catch(_) {}
           auth0Client.logout({ logoutParams: { returnTo: window.location.origin + "/financial_tracker.html" } });
@@ -702,6 +713,27 @@
         } catch (e) {
           console.warn("Cloud sync on init failed:", e);
         }
+      }
+
+      function enterGuestMode() {
+        GUEST_MODE = true;
+        const landing = document.getElementById("auth-landing");
+        const app = document.getElementById("app-container");
+        const userInfo = document.getElementById("user-info");
+        const logoutBtn = document.getElementById("btn-logout");
+        const saveBtn = document.getElementById("btn-save");
+        const loadBtn = document.getElementById("btn-load");
+        landing.classList.add("hidden");
+        app.classList.remove("hidden");
+        if (userInfo) userInfo.textContent = "Guest";
+        if (logoutBtn) logoutBtn.style.display = "none";
+        if (saveBtn) { saveBtn.disabled = true; saveBtn.title = "Saving disabled in guest mode"; }
+        if (loadBtn) { loadBtn.disabled = true; loadBtn.title = "Loading disabled in guest mode"; }
+        // Fresh in-memory data only
+        financialData = { snapshots: [] };
+        renderBlankState(true);
+        initDatePicker();
+        requestAnimationFrame(() => updateChart());
       }
 
     // Установка текущей даты
@@ -1164,6 +1196,10 @@
       }
 
       async function saveSnapshot() {
+        if (GUEST_MODE) {
+          alert("Guest mode: saving is disabled. Sign in to save data.");
+          return;
+        }
         const date = document.getElementById("recordDate").value;
         if (!date) {
           alert("Please select a date");
