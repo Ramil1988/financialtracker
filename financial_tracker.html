@@ -674,13 +674,13 @@
         localStorage.getItem("financialData") || '{"snapshots": []}'
       );
 
-      // When user changes date, auto-render the effective snapshot (exact or latest prior)
+      // When user changes date, auto-render the nearest snapshot (exact or closest by date)
       (function attachDateChangeHandler() {
         const input = document.getElementById("recordDate");
         if (!input) return;
         input.addEventListener("change", (e) => {
           const d = e.target.value;
-          const snap = getEffectiveSnapshotForDate(d);
+          const snap = getNearestSnapshotForDate(d);
           if (snap) {
             renderSnapshotToForm(snap, { keepCurrentDate: true });
             updateChart();
@@ -771,15 +771,29 @@
         return remote;
       }
 
-      function getEffectiveSnapshotForDate(date) {
+      function getNearestSnapshotForDate(date) {
         const snaps = Array.isArray(financialData.snapshots) ? financialData.snapshots : [];
+        if (snaps.length === 0) return null;
+        // Exact match
         const exact = snaps.find((s) => s.date === date);
         if (exact) return exact;
-        const prior = snaps
-          .filter((s) => s.date && s.date <= date)
-          .sort((a, b) => (a.date > b.date ? 1 : a.date < b.date ? -1 : 0))
-          .slice(-1)[0];
-        return prior || null;
+        const target = Date.parse(date);
+        let best = null;
+        let bestDiff = Infinity;
+        for (const s of snaps) {
+          if (!s.date) continue;
+          const t = Date.parse(s.date);
+          if (isNaN(t) || isNaN(target)) continue;
+          const diff = Math.abs(t - target);
+          if (diff < bestDiff) {
+            bestDiff = diff;
+            best = s;
+          } else if (diff === bestDiff) {
+            // Tie-breaker: prefer earlier date
+            if (best && s.date < best.date) best = s;
+          }
+        }
+        return best;
       }
 
       // Find and load snapshot by selected date
@@ -792,7 +806,7 @@
           }
         } catch (_) {}
 
-        const snap = getEffectiveSnapshotForDate(date);
+        const snap = getNearestSnapshotForDate(date);
         if (snap) {
           renderSnapshotToForm(snap, { keepCurrentDate: true });
           updateChart();
