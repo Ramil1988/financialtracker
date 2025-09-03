@@ -617,6 +617,18 @@
           const user = await auth0Client.getUser();
           userInfo.textContent = user && (user.name || user.email) ? `Hello, ${user.name || user.email}` : "";
           logoutBtn.style.display = "inline-block";
+          // If a different user signed in, reset local data to blank
+          try {
+            const prevSub = localStorage.getItem("lastUserSub") || "";
+            const newSub = (user && user.sub) || "";
+            if (newSub && newSub !== prevSub) {
+              localStorage.setItem("lastUserSub", newSub);
+              financialData = { snapshots: [] };
+              localStorage.setItem("financialData", JSON.stringify(financialData));
+              renderBlankState(true);
+              try { if (datePicker) datePicker.redraw(); } catch(_) {}
+            }
+          } catch(_) {}
           // App became visible; ensure chart sizes and renders correctly
           requestAnimationFrame(() => updateChart());
         } else {
@@ -651,6 +663,7 @@
           auth0Client.loginWithRedirect();
         });
         document.getElementById("btn-logout").addEventListener("click", () => {
+          try { localStorage.removeItem("financialData"); } catch(_) {}
           auth0Client.logout({ logoutParams: { returnTo: window.location.origin + "/financial_tracker.html" } });
         });
 
@@ -804,12 +817,30 @@
         calculateTotals();
       }
 
+      // Clear all rows; optionally add one empty row in each section for convenience
+      function renderBlankState(addOneRow = true) {
+        const assetsTbody = document.querySelector("#assetsTable tbody");
+        const liabsTbody = document.querySelector("#liabilitiesTable tbody");
+        if (assetsTbody) assetsTbody.innerHTML = "";
+        if (liabsTbody) liabsTbody.innerHTML = "";
+        currentRenderedSnapshotDate = null;
+        if (addOneRow) {
+          try { addAssetRow(); } catch(_) {}
+          try { addLiabilityRow(); } catch(_) {}
+        }
+        calculateTotals();
+      }
+
       // Pull snapshots from API, persist locally, and render last
       async function syncFromCloudAndRender() {
         const remote = await syncFromCloud();
         if (remote.length > 0) {
           const latest = [...remote].sort((a, b) => (a.date > b.date ? 1 : a.date < b.date ? -1 : 0)).slice(-1)[0];
           renderSnapshotToForm(latest);
+          updateChart();
+        } else {
+          // No server data for this user — start with a blank sheet
+          renderBlankState(true);
           updateChart();
         }
       }
@@ -822,6 +853,7 @@
         localStorage.setItem("financialData", JSON.stringify(financialData));
         // Refresh date picker markers
         try { if (datePicker) datePicker.redraw(); } catch(_) {}
+        try { if (comparePicker) comparePicker.redraw(); } catch(_) {}
         return remote;
       }
 
@@ -866,6 +898,14 @@
           .sort((a, b) => (a.date > b.date ? 1 : a.date < b.date ? -1 : 0))
           .slice(-1)[0];
         return prior || null;
+      }
+
+      function getExactOrPriorSnapshotForDate(date) {
+        if (!date) return null;
+        const snaps = Array.isArray(financialData.snapshots) ? financialData.snapshots : [];
+        const exact = snaps.find((s) => s.date === date);
+        if (exact) return exact;
+        return getPreviousSnapshotForDate(date);
       }
 
       // Find and load snapshot by selected date
@@ -1036,18 +1076,19 @@
         document.getElementById("totalDebt").textContent =
           formatCAD(totalLiabilities);
 
-        // Изменение активов относительно предыдущего снимка (по показанной дате)
+        // Изменение активов между выбранной датой сравнения и текущей показанной датой
         (function updateAssetsChangeVsPrev() {
           const selectedDate = document.getElementById("recordDate").value;
           const basisDate = currentRenderedSnapshotDate || selectedDate;
-          const prev = getPreviousSnapshotForDate(basisDate);
-          const change = prev ? totalAssets - (prev.totalAssets || 0) : 0;
+          const chosenLeft = document.getElementById("compareDate")?.value || "";
+          const leftSnap = chosenLeft ? getExactOrPriorSnapshotForDate(chosenLeft) : getPreviousSnapshotForDate(basisDate);
+          const change = leftSnap ? totalAssets - (leftSnap.totalAssets || 0) : 0;
           const el = document.getElementById("periodChange");
           el.textContent = (change >= 0 ? "+" : "") + formatCAD(change);
           el.className = change >= 0 ? "amount positive" : "amount negative";
           const leftEl = document.getElementById("periodChangeLeft");
           const rightEl = document.getElementById("periodChangeRight");
-          if (leftEl) leftEl.textContent = prev ? formatDateDMY(prev.date) : "—";
+          if (leftEl) leftEl.textContent = leftSnap ? formatDateDMY(leftSnap.date) : (chosenLeft ? formatDateDMY(chosenLeft) : "—");
           if (rightEl) rightEl.textContent = formatDateDMY(basisDate);
         })();
       }
