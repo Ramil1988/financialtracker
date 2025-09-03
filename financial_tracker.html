@@ -1035,7 +1035,13 @@
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download =
-      // Call backend API with Auth0 token
+          "financial_tracker_" +
+          new Date().toISOString().split("T")[0] +
+          ".csv";
+        link.click();
+      }
+
+      // Call backend API with Auth0 token (global)
       async function apiFetch(path, options = {}) {
         if (!auth0Client) throw new Error("Auth not initialized");
         const isAuth = await auth0Client.isAuthenticated();
@@ -1046,7 +1052,7 @@
         const res = await fetch(`/api${path}`, {
           ...options,
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
             ...(options.headers || {}),
           },
@@ -1057,12 +1063,6 @@
         }
         const ct = res.headers.get("content-type") || "";
         return ct.includes("application/json") ? res.json() : res.text();
-      }
-
-          "financial_tracker_" +
-          new Date().toISOString().split("T")[0] +
-          ".csv";
-        link.click();
       }
 
       // Инициализация (after DOM is ready and SDK loaded)
