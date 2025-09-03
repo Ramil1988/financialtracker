@@ -214,9 +214,34 @@
         border: 1px solid #ddd;
       }
 
-      .export-btn {
-        background: #27ae60;
-        margin-left: 10px;
+      /* Fancy, responsive top toolbar */
+      .date-selector {
+        margin-bottom: 20px;
+        text-align: center;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        background: #ffffff;
+        padding: 12px 16px;
+        border-radius: 10px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+      }
+      .date-selector label { white-space: nowrap; color: #333; }
+      .date-selector input {
+        margin: 0 10px;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+      }
+      @media (max-width: 768px) {
+        .date-selector { flex-direction: column; align-items: stretch; gap: 8px; }
+        .date-selector label { align-self: flex-start; }
+        .date-selector .flatpickr-input[type="text"],
+        #recordDate,
+        #compareDate,
+        .date-selector .btn { width: 100% !important; }
       }
 
       .metrics-grid {
@@ -282,9 +307,7 @@
         <button class="btn" onclick="saveSnapshot()">
           💾 Save Snapshot
         </button>
-        <button class="btn export-btn" onclick="exportToExcel()">
-          📊 Export to Excel
-        </button>
+        
       </div>
 
       <div class="summary-cards">
@@ -1300,56 +1323,7 @@
 
       // Chart.js handles responsiveness internally; no custom resize handler needed
 
-      function exportToExcel() {
-        // Создание детального CSV для экспорта
-        let csv = "Financial Tracker Export\n\n";
-
-        // Текущее состояние
-        csv += "CURRENT SNAPSHOT\n";
-        csv += "Date," + document.getElementById("recordDate").value + "\n\n";
-
-        // Активы
-        csv += "ASSETS\n";
-        csv += "Category,Name,Amount (CAD),Notes\n";
-        const assetRows = document.querySelectorAll("#assetsTable tbody tr");
-        assetRows.forEach((row) => {
-          const category = row.cells[0].querySelector("select").value;
-          const name = row.cells[1].querySelector("input").value;
-          const amount = row.cells[2].querySelector("input").value || 0;
-          const note = row.cells[4].querySelector("input").value;
-          csv += `${category},${name},${amount},${note}\n`;
-        });
-
-        csv += "\nLIABILITIES\n";
-        csv += "Type,Creditor,Balance (CAD),Monthly Payment,Interest Rate\n";
-        const liabilityRows = document.querySelectorAll(
-          "#liabilitiesTable tbody tr"
-        );
-        liabilityRows.forEach((row) => {
-          const type = row.cells[0].querySelector("select").value;
-          const creditor = row.cells[1].querySelector("input").value;
-          const amount = row.cells[2].querySelector("input").value || 0;
-          const payment = row.cells[3].querySelector("input").value || 0;
-          const rate = row.cells[4].querySelector("input").value;
-          csv += `${type},${creditor},${amount},${payment},${rate}\n`;
-        });
-
-        csv += "\nHISTORICAL DATA\n";
-        csv += "Date,Total Assets,Total Liabilities,Net Worth\n";
-        financialData.snapshots.forEach((snapshot) => {
-          csv += `${snapshot.date},${snapshot.totalAssets},${snapshot.totalLiabilities},${snapshot.netWorth}\n`;
-        });
-
-        // Скачивание файла
-        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download =
-          "financial_tracker_" +
-          new Date().toISOString().split("T")[0] +
-          ".csv";
-        link.click();
-      }
+      // Export removed per request
 
       // Call backend API with Auth0 token (global)
       async function apiFetch(path, options = {}) {
