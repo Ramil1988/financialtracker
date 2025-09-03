@@ -144,6 +144,12 @@
         font-size: 14px;
       }
 
+      /* Make the top date picker compact instead of full width */
+      #recordDate, .flatpickr-input {
+        width: 220px !important;
+        display: inline-block;
+      }
+
       input[type="number"] {
         text-align: right;
       }
@@ -297,7 +303,7 @@
           <div class="amount" id="debtRatio">0%</div>
         </div>
         <div class="card">
-          <h3>Assets Change vs <span id="periodChangeRef">—</span></h3>
+          <h3>Assets Change <span id="periodChangeLeft">—</span> vs <span id="periodChangeRight">—</span></h3>
           <div class="amount" id="periodChange">CAD $0</div>
         </div>
       </div>
@@ -670,6 +676,8 @@
         if (datePicker) { try { datePicker.destroy(); } catch(_) {} }
         datePicker = flatpickr("#recordDate", {
           dateFormat: "Y-m-d",
+          altInput: true,
+          altFormat: "d.m.y",
           defaultDate: document.getElementById("recordDate").value,
           disableMobile: true,
           onChange: (selectedDates, dateStr) => {
@@ -797,6 +805,15 @@
         // Refresh date picker markers
         try { if (datePicker) datePicker.redraw(); } catch(_) {}
         return remote;
+      }
+
+      function formatDateDMY(iso) {
+        if (!iso || typeof iso !== "string" || !iso.includes("-")) return "—";
+        const [y, m, d] = iso.split("-");
+        const dd = (d || "").padStart(2, "0");
+        const mm = (m || "").padStart(2, "0");
+        const yy = (y || "").slice(-2).padStart(2, "0");
+        return `${dd}.${mm}.${yy}`;
       }
 
       function getNearestSnapshotForDate(date) {
@@ -1010,8 +1027,10 @@
           const el = document.getElementById("periodChange");
           el.textContent = (change >= 0 ? "+" : "") + formatCAD(change);
           el.className = change >= 0 ? "amount positive" : "amount negative";
-          const refEl = document.getElementById("periodChangeRef");
-          if (refEl) refEl.textContent = prev ? prev.date : "—";
+          const leftEl = document.getElementById("periodChangeLeft");
+          const rightEl = document.getElementById("periodChangeRight");
+          if (leftEl) leftEl.textContent = prev ? formatDateDMY(prev.date) : "—";
+          if (rightEl) rightEl.textContent = formatDateDMY(basisDate);
         })();
       }
 
