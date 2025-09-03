@@ -19,6 +19,7 @@
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         min-height: 100vh;
         padding: 20px;
+        overflow-x: hidden; /* prevent horizontal bleed */
       }
 
       .hidden { display: none; }
@@ -38,7 +39,8 @@
       .landing p { color: #444; margin: 10px 0 20px; }
 
       .container {
-        max-width: 1400px;
+        max-width: 1200px;
+        width: 100%;
         margin: 0 auto;
         background: rgba(255, 255, 255, 0.95);
         border-radius: 20px;
@@ -110,8 +112,12 @@
         align-items: center;
       }
 
+      /* Keep wide tables from overflowing the layout */
+      .section { overflow-x: auto; }
+
       table {
         width: 100%;
+        table-layout: auto;
         border-collapse: collapse;
         background: white;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
@@ -122,6 +128,7 @@
         padding: 12px;
         text-align: left;
         border-bottom: 1px solid #e0e0e0;
+        word-break: break-word; /* avoid long content pushing width */
       }
 
       th {
