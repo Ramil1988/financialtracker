@@ -580,8 +580,20 @@
       </div>
     </div>
 
-    <script src="https://cdn.auth0.com/js/auth0-spa-js/2.1/auth0-spa-js.production.js"></script>
     <script>
+      // Lazy-load Auth0 SPA SDK to avoid race conditions
+      async function loadAuth0Sdk() {
+        if (window.createAuth0Client) return;
+        await new Promise((resolve, reject) => {
+          const s = document.createElement("script");
+          s.src = "https://cdn.auth0.com/js/auth0-spa-js/2.1/auth0-spa-js.production.js";
+          s.async = true;
+          s.onload = () => resolve();
+          s.onerror = () => reject(new Error("Auth0 SDK failed to load"));
+          document.head.appendChild(s);
+        });
+      }
+
       // ==== Auth0 SPA Setup ====
       const authConfig = {
         domain: "dev-1qlaqx8pn3fopdzo.us.auth0.com", // your Auth0 domain
@@ -613,6 +625,7 @@
       }
 
       async function initAuth() {
+        await loadAuth0Sdk();
         auth0Client = await createAuth0Client({
           domain: authConfig.domain,
           clientId: authConfig.clientId,
@@ -1012,10 +1025,12 @@
         link.click();
       }
 
-      // Инициализация
-      calculateTotals();
-      updateChart();
-      initAuth();
+      // Инициализация (after DOM is ready and SDK loaded)
+      window.addEventListener("DOMContentLoaded", async () => {
+        calculateTotals();
+        updateChart();
+        try { await initAuth(); } catch (e) { console.error(e); }
+      });
     </script>
   </body>
 </html>
