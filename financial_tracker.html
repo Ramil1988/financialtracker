@@ -669,6 +669,8 @@
         });
       })();
 
+      let currentRenderedSnapshotDate = null; // actual date of data currently shown
+
       // Replace table rows with data from a snapshot
       function renderSnapshotToForm(snapshot, opts = {}) {
         if (!snapshot) return;
@@ -725,6 +727,9 @@
             <td><button class="btn btn-delete" onclick="deleteRow(this)">Delete</button></td>
           `;
         });
+
+        // Track what date the data is from
+        currentRenderedSnapshotDate = snapshot.date || null;
 
         // Set date and recalc
         if (!keepCurrentDate && snapshot.date) {
@@ -876,38 +881,29 @@
         let liquidAssets = 0;
         let investments = 0;
         let homeValue = 0;
-
         const assetRows = document.querySelectorAll("#assetsTable tbody tr");
+        const rowAmounts = [];
         assetRows.forEach((row) => {
           const category = row.cells[0].querySelector("select").value;
-          const amount =
-            parseFloat(row.cells[2].querySelector("input").value) || 0;
+          const amount = parseFloat(row.cells[2].querySelector("input").value) || 0;
+          rowAmounts.push(amount);
           totalAssets += amount;
 
           // Подсчет ликвидных активов
-          if (category === "Cash" || category === "Bank Account") {
-            liquidAssets += amount;
-          }
+          if (category === "Cash" || category === "Bank Account") liquidAssets += amount;
 
           // Подсчет инвестиций
-          if (
-            category === "RRSP" ||
-            category === "TFSA" ||
-            category === "Investments"
-          ) {
-            investments += amount;
-          }
+          if (category === "RRSP" || category === "TFSA" || category === "Investments") investments += amount;
 
           // Стоимость дома
-          if (category === "Real Estate") {
-            homeValue += amount;
-          }
+          if (category === "Real Estate") homeValue += amount;
+        });
 
-          // Обновление процентов
-          if (totalAssets > 0) {
-            row.cells[3].textContent =
-              ((amount / totalAssets) * 100).toFixed(1) + "%";
-          }
+        // Second pass to compute % of Assets using the final total
+        assetRows.forEach((row, idx) => {
+          const amount = rowAmounts[idx] || 0;
+          const pct = totalAssets > 0 ? (amount / totalAssets) * 100 : 0;
+          row.cells[3].textContent = pct.toFixed(1) + "%";
         });
 
         // Подсчет долгов
@@ -963,10 +959,11 @@
         document.getElementById("totalDebt").textContent =
           formatCAD(totalLiabilities);
 
-        // Изменение активов относительно предыдущего снимка (по выбранной дате)
+        // Изменение активов относительно предыдущего снимка (по показанной дате)
         (function updateAssetsChangeVsPrev() {
-          const currentDate = document.getElementById("recordDate").value;
-          const prev = getPreviousSnapshotForDate(currentDate);
+          const selectedDate = document.getElementById("recordDate").value;
+          const basisDate = currentRenderedSnapshotDate || selectedDate;
+          const prev = getPreviousSnapshotForDate(basisDate);
           const change = prev ? totalAssets - (prev.totalAssets || 0) : 0;
           const el = document.getElementById("periodChange");
           el.textContent = (change >= 0 ? "+" : "") + formatCAD(change);
