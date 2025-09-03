@@ -674,23 +674,24 @@
         localStorage.getItem("financialData") || '{"snapshots": []}'
       );
 
-      // When user changes date, auto-render if a snapshot exists
+      // When user changes date, auto-render the effective snapshot (exact or latest prior)
       (function attachDateChangeHandler() {
         const input = document.getElementById("recordDate");
         if (!input) return;
         input.addEventListener("change", (e) => {
           const d = e.target.value;
-          const snap = (financialData.snapshots || []).find((s) => s.date === d);
+          const snap = getEffectiveSnapshotForDate(d);
           if (snap) {
-            renderSnapshotToForm(snap);
+            renderSnapshotToForm(snap, { keepCurrentDate: true });
             updateChart();
           }
         });
       })();
 
       // Replace table rows with data from a snapshot
-      function renderSnapshotToForm(snapshot) {
+      function renderSnapshotToForm(snapshot, opts = {}) {
         if (!snapshot) return;
+        const keepCurrentDate = !!opts.keepCurrentDate;
         const assetsTbody = document.querySelector("#assetsTable tbody");
         const liabsTbody = document.querySelector("#liabilitiesTable tbody");
 
@@ -745,7 +746,7 @@
         });
 
         // Set date and recalc
-        if (snapshot.date) {
+        if (!keepCurrentDate && snapshot.date) {
           document.getElementById("recordDate").value = snapshot.date;
         }
         calculateTotals();
@@ -770,6 +771,17 @@
         return remote;
       }
 
+      function getEffectiveSnapshotForDate(date) {
+        const snaps = Array.isArray(financialData.snapshots) ? financialData.snapshots : [];
+        const exact = snaps.find((s) => s.date === date);
+        if (exact) return exact;
+        const prior = snaps
+          .filter((s) => s.date && s.date <= date)
+          .sort((a, b) => (a.date > b.date ? 1 : a.date < b.date ? -1 : 0))
+          .slice(-1)[0];
+        return prior || null;
+      }
+
       // Find and load snapshot by selected date
       async function loadSnapshotByDate(date) {
         if (!date) return;
@@ -780,12 +792,10 @@
           }
         } catch (_) {}
 
-        const snap = (financialData.snapshots || []).find((s) => s.date === date);
+        const snap = getEffectiveSnapshotForDate(date);
         if (snap) {
-          renderSnapshotToForm(snap);
+          renderSnapshotToForm(snap, { keepCurrentDate: true });
           updateChart();
-        } else {
-          alert("No snapshot saved for this date");
         }
       }
 
