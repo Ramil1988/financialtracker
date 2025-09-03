@@ -13,6 +13,7 @@ const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || "*")
 let cachedClient;
 let cachedDb;
 let cachedJWKS;
+let indexesEnsured = false;
 
 async function getDb() {
   if (!MONGODB_URI) throw new Error("MONGODB_URI not set");
@@ -22,6 +23,15 @@ async function getDb() {
   });
   await cachedClient.connect();
   cachedDb = cachedClient.db(MONGODB_DB);
+  // Ensure indexes once per cold start
+  if (!indexesEnsured) {
+    try {
+      const col = cachedDb.collection("snapshots");
+      await col.createIndex({ sub: 1, date: 1 }, { unique: true, name: "uniq_user_date" });
+      await col.createIndex({ sub: 1 }, { name: "by_user" });
+      indexesEnsured = true;
+    } catch (_) {}
+  }
   return cachedDb;
 }
 
@@ -135,7 +145,16 @@ export async function handler(event) {
       if (!snapshot || !snapshot.date || typeof snapshot.netWorth !== "number") {
         return json(400, { error: "Invalid snapshot payload" }, origin);
       }
-      await col.insertOne({ ...snapshot, sub: user.sub, createdAt: new Date() });
+      const now = new Date();
+      const { date, ...rest } = snapshot;
+      await col.updateOne(
+        { sub: user.sub, date },
+        {
+          $set: { ...rest, updatedAt: now },
+          $setOnInsert: { sub: user.sub, date, createdAt: now },
+        },
+        { upsert: true }
+      );
       return json(201, { ok: true }, origin);
     }
 
@@ -151,4 +170,3 @@ export async function handler(event) {
     return json(500, { error: "Server error" }, origin);
   }
 }
-
