@@ -652,6 +652,15 @@
         });
 
         await updateUI();
+
+        // If authenticated, pull snapshots from cloud and render latest
+        try {
+          if (await auth0Client.isAuthenticated()) {
+            await syncFromCloudAndRender();
+          }
+        } catch (e) {
+          console.warn("Cloud sync on init failed:", e);
+        }
       }
 
     // Установка текущей даты
@@ -663,6 +672,82 @@
   let financialData = JSON.parse(
         localStorage.getItem("financialData") || '{"snapshots": []}'
       );
+
+      // Replace table rows with data from a snapshot
+      function renderSnapshotToForm(snapshot) {
+        if (!snapshot) return;
+        const assetsTbody = document.querySelector("#assetsTable tbody");
+        const liabsTbody = document.querySelector("#liabilitiesTable tbody");
+
+        // Clear existing rows
+        assetsTbody.innerHTML = "";
+        liabsTbody.innerHTML = "";
+
+        // Populate assets
+        (snapshot.assets || []).forEach((a) => {
+          const row = assetsTbody.insertRow();
+          row.innerHTML = `
+            <td>
+              <select>
+                <option ${a.category === 'Cash' ? 'selected' : ''}>Cash</option>
+                <option ${a.category === 'Bank Account' ? 'selected' : ''}>Bank Account</option>
+                <option ${a.category === 'Investments' ? 'selected' : ''}>Investments</option>
+                <option ${a.category === 'Real Estate' ? 'selected' : ''}>Real Estate</option>
+                <option ${a.category === 'Vehicle' ? 'selected' : ''}>Vehicle</option>
+                <option ${a.category === 'RRSP' ? 'selected' : ''}>RRSP</option>
+                <option ${a.category === 'TFSA' ? 'selected' : ''}>TFSA</option>
+                <option ${a.category === 'Other' ? 'selected' : ''}>Other</option>
+              </select>
+            </td>
+            <td><input type="text" value="${(a.name || '').replace(/"/g, '&quot;')}" /></td>
+            <td><input type="number" value="${a.amount || 0}" onchange="calculateTotals()" /></td>
+            <td class="percentage">0%</td>
+            <td><input type="text" value="${(a.note || '').replace(/"/g, '&quot;')}" /></td>
+            <td><button class="btn btn-delete" onclick="deleteRow(this)">Delete</button></td>
+          `;
+        });
+
+        // Populate liabilities
+        (snapshot.liabilities || []).forEach((l) => {
+          const row = liabsTbody.insertRow();
+          row.innerHTML = `
+            <td>
+              <select>
+                <option ${l.type === 'Mortgage' ? 'selected' : ''}>Mortgage</option>
+                <option ${l.type === 'Car Loan' ? 'selected' : ''}>Car Loan</option>
+                <option ${l.type === 'Personal Loan' ? 'selected' : ''}>Personal Loan</option>
+                <option ${l.type === 'Credit Card' ? 'selected' : ''}>Credit Card</option>
+                <option ${l.type === 'Private Loan' ? 'selected' : ''}>Private Loan</option>
+                <option ${l.type === 'Other' ? 'selected' : ''}>Other</option>
+              </select>
+            </td>
+            <td><input type="text" value="${(l.creditor || '').replace(/"/g, '&quot;')}" /></td>
+            <td><input type="number" value="${l.amount || 0}" onchange="calculateTotals()" /></td>
+            <td><input type="number" value="${l.payment || 0}" /></td>
+            <td><input type="text" value="${(l.rate || '').replace(/"/g, '&quot;')}" /></td>
+            <td><button class="btn btn-delete" onclick="deleteRow(this)">Delete</button></td>
+          `;
+        });
+
+        // Set date and recalc
+        if (snapshot.date) {
+          document.getElementById("recordDate").value = snapshot.date;
+        }
+        calculateTotals();
+      }
+
+      // Pull snapshots from API, persist locally, and render last
+      async function syncFromCloudAndRender() {
+        const result = await apiFetch("/snapshots", { method: "GET" });
+        const remote = Array.isArray(result.snapshots) ? result.snapshots : [];
+        financialData.snapshots = remote;
+        localStorage.setItem("financialData", JSON.stringify(financialData));
+        if (remote.length > 0) {
+          const latest = [...remote].sort((a, b) => (a.date > b.date ? 1 : a.date < b.date ? -1 : 0)).slice(-1)[0];
+          renderSnapshotToForm(latest);
+          updateChart();
+        }
+      }
 
       function formatCAD(amount) {
         return (
