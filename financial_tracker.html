@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Financial Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
       * {
         margin: 0;
@@ -1058,80 +1059,78 @@
         updateChart();
       }
 
+      let nwChart;
+
       function updateChart() {
         const canvas = document.getElementById("netWorthChart");
-        const ctx = canvas.getContext("2d");
+        if (!canvas) return;
 
-        // Determine a sane drawing width even if container just became visible
-        const container = canvas.parentElement;
-        const availableWidth = Math.max(
-          320,
-          canvas.clientWidth || canvas.offsetWidth || container.clientWidth || container.offsetWidth || 600
-        );
-        canvas.width = availableWidth;
-        canvas.height = 300;
+        const snapshots = (financialData.snapshots || []).slice(-24); // show up to last 24
+        const labels = snapshots.map((s) => s.date);
+        const data = snapshots.map((s) => s.netWorth);
 
-        if (financialData.snapshots.length === 0) {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.fillStyle = "#666";
-          ctx.font = "14px Arial";
-          ctx.fillText(
-            "No data to display",
-            canvas.width / 2 - 70,
-            canvas.height / 2
-          );
-          return;
+        if (!window.Chart) return; // Chart.js not loaded yet
+
+        const cfg = {
+          type: "line",
+          data: {
+            labels,
+            datasets: [
+              {
+                label: "Equity",
+                data,
+                borderColor: "#667eea",
+                backgroundColor: "rgba(102,126,234,0.2)",
+                tension: 0.25,
+                pointRadius: 3,
+                pointBackgroundColor: "#667eea",
+                fill: true,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: "index", intersect: false },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => `Equity: ${formatCAD(ctx.parsed.y)}`,
+                },
+              },
+            },
+            scales: {
+              x: {
+                title: { display: true, text: "Date" },
+                ticks: { maxRotation: 0, autoSkip: true },
+                grid: { display: false },
+              },
+              y: {
+                title: { display: true, text: "CAD" },
+                ticks: {
+                  callback: (v) => {
+                    try { return formatCAD(v).replace("CAD ", "$"); } catch { return v; }
+                  },
+                },
+              },
+            },
+          },
+        };
+
+        if (nwChart) {
+          // Update existing chart
+          nwChart.data.labels = labels;
+          nwChart.data.datasets[0].data = data;
+          nwChart.update();
+        } else {
+          nwChart = new Chart(canvas.getContext("2d"), cfg);
         }
-
-        // Простая визуализация графика
-        const snapshots = financialData.snapshots.slice(-12); // Последние 12 записей
-        const maxValue = Math.max(...snapshots.map((s) => s.netWorth));
-        const minValue = Math.min(...snapshots.map((s) => s.netWorth));
-        const range = maxValue - minValue || 1;
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.strokeStyle = "#667eea";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-
-        snapshots.forEach((snapshot, index) => {
-          const x = (index / (snapshots.length - 1)) * (canvas.width - 40) + 20;
-          const y =
-            canvas.height -
-            (((snapshot.netWorth - minValue) / range) * (canvas.height - 40) +
-              20);
-
-          if (index === 0) {
-            ctx.moveTo(x, y);
-          } else {
-            ctx.lineTo(x, y);
-          }
-
-          // Точка
-          ctx.fillStyle = "#667eea";
-          ctx.beginPath();
-          ctx.arc(x, y, 4, 0, Math.PI * 2);
-          ctx.fill();
-
-          // Подпись даты
-          ctx.fillStyle = "#666";
-          ctx.font = "10px Arial";
-          ctx.save();
-          ctx.translate(x, canvas.height - 5);
-          ctx.rotate(-Math.PI / 4);
-          ctx.fillText(snapshot.date, 0, 0);
-          ctx.restore();
-        });
-
-        ctx.stroke();
       }
 
-      // Re-render chart on window resize to match container width
+      // On resize, let Chart.js handle responsiveness
       window.addEventListener("resize", () => {
-        const app = document.getElementById("app-container");
-        if (!app.classList.contains("hidden")) {
-          updateChart();
-        }
+        if (nwChart) nwChart.resize();
       });
 
       function exportToExcel() {
