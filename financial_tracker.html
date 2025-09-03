@@ -145,7 +145,7 @@
       }
 
       /* Make the top date picker compact instead of full width */
-      #recordDate, .flatpickr-input {
+      #recordDate, .date-selector .flatpickr-input[type="text"] {
         width: 220px !important;
         display: inline-block;
       }
@@ -692,6 +692,24 @@
               dayElem.classList.add("has-snapshot");
             }
           },
+          onReady: function(selectedDates, dateStr, fp) {
+            // Hide the original input to prevent full-width layout from global styles
+            const orig = document.getElementById("recordDate");
+            if (orig) {
+              orig.style.position = "absolute";
+              orig.style.left = "-9999px";
+              orig.style.width = "0";
+              orig.style.opacity = "0";
+            }
+            // Ensure alt input is compact
+            try {
+              const alt = fp.altInput;
+              if (alt) {
+                alt.style.width = "220px";
+                alt.style.display = "inline-block";
+              }
+            } catch(_) {}
+          }
         });
       }
 
