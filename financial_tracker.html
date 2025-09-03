@@ -252,6 +252,7 @@
         <input type="date" id="recordDate" value="" />
         <span style="margin:0 10px; color:#555" id="user-info"></span>
         <button id="btn-logout" class="btn" style="background:#555">🚪 Logout</button>
+        <button class="btn" onclick="loadSnapshot()">🔄 Load Snapshot</button>
         <button class="btn" onclick="saveSnapshot()">
           💾 Save Snapshot
         </button>
@@ -673,6 +674,20 @@
         localStorage.getItem("financialData") || '{"snapshots": []}'
       );
 
+      // When user changes date, auto-render if a snapshot exists
+      (function attachDateChangeHandler() {
+        const input = document.getElementById("recordDate");
+        if (!input) return;
+        input.addEventListener("change", (e) => {
+          const d = e.target.value;
+          const snap = (financialData.snapshots || []).find((s) => s.date === d);
+          if (snap) {
+            renderSnapshotToForm(snap);
+            updateChart();
+          }
+        });
+      })();
+
       // Replace table rows with data from a snapshot
       function renderSnapshotToForm(snapshot) {
         if (!snapshot) return;
@@ -738,15 +753,46 @@
 
       // Pull snapshots from API, persist locally, and render last
       async function syncFromCloudAndRender() {
-        const result = await apiFetch("/snapshots", { method: "GET" });
-        const remote = Array.isArray(result.snapshots) ? result.snapshots : [];
-        financialData.snapshots = remote;
-        localStorage.setItem("financialData", JSON.stringify(financialData));
+        const remote = await syncFromCloud();
         if (remote.length > 0) {
           const latest = [...remote].sort((a, b) => (a.date > b.date ? 1 : a.date < b.date ? -1 : 0)).slice(-1)[0];
           renderSnapshotToForm(latest);
           updateChart();
         }
+      }
+
+      // Pull snapshots from API and store locally; return array
+      async function syncFromCloud() {
+        const result = await apiFetch("/snapshots", { method: "GET" });
+        const remote = Array.isArray(result.snapshots) ? result.snapshots : [];
+        financialData.snapshots = remote;
+        localStorage.setItem("financialData", JSON.stringify(financialData));
+        return remote;
+      }
+
+      // Find and load snapshot by selected date
+      async function loadSnapshotByDate(date) {
+        if (!date) return;
+        // Refresh from cloud if logged in, so we have latest
+        try {
+          if (auth0Client && (await auth0Client.isAuthenticated())) {
+            await syncFromCloud();
+          }
+        } catch (_) {}
+
+        const snap = (financialData.snapshots || []).find((s) => s.date === date);
+        if (snap) {
+          renderSnapshotToForm(snap);
+          updateChart();
+        } else {
+          alert("No snapshot saved for this date");
+        }
+      }
+
+      // Convenience for button onclick
+      function loadSnapshot() {
+        const date = document.getElementById("recordDate").value;
+        loadSnapshotByDate(date);
       }
 
       function formatCAD(amount) {
@@ -993,7 +1039,13 @@
           netWorth,
         };
 
-        financialData.snapshots.push(snapshot);
+        // Upsert into local list by date
+        const existingIdx = (financialData.snapshots || []).findIndex((s) => s.date === date);
+        if (existingIdx >= 0) {
+          financialData.snapshots[existingIdx] = snapshot;
+        } else {
+          financialData.snapshots.push(snapshot);
+        }
         localStorage.setItem("financialData", JSON.stringify(financialData));
 
         // Try to sync to backend (ignore if not logged in)
@@ -1004,6 +1056,8 @@
               method: "POST",
               body: JSON.stringify({ snapshot }),
             });
+            // Refresh local cache from cloud to ensure consistency
+            try { await syncFromCloud(); } catch (_) {}
             cloudMsg = " Synced to cloud.";
           }
         } catch (e) {
