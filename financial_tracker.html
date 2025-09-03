@@ -312,6 +312,7 @@
         <span style="margin:0 10px; color:#555" id="user-info"></span>
         <button id="btn-logout" class="btn" style="background:#555">🚪 Logout</button>
         <button id="btn-load" class="btn" onclick="loadSnapshot()">🔄 Load Snapshot</button>
+        <button id="btn-delete" class="btn btn-delete" style="background:#c0392b" onclick="deleteSnapshot()">🗑️ Delete Snapshot</button>
         <button id="btn-save" class="btn" onclick="saveSnapshot()">
           💾 Save Snapshot
         </button>
@@ -723,12 +724,14 @@
         const logoutBtn = document.getElementById("btn-logout");
         const saveBtn = document.getElementById("btn-save");
         const loadBtn = document.getElementById("btn-load");
+        const delBtn = document.getElementById("btn-delete");
         landing.classList.add("hidden");
         app.classList.remove("hidden");
         if (userInfo) userInfo.textContent = "Guest";
         if (logoutBtn) logoutBtn.style.display = "none";
         if (saveBtn) { saveBtn.disabled = true; saveBtn.title = "Saving disabled in guest mode"; }
         if (loadBtn) { loadBtn.disabled = true; loadBtn.title = "Loading disabled in guest mode"; }
+        if (delBtn) { delBtn.disabled = true; delBtn.title = "Delete disabled in guest mode"; }
         // Fresh in-memory data only
         financialData = { snapshots: [] };
         renderBlankState(true);
@@ -1031,6 +1034,49 @@
       function loadSnapshot() {
         const date = document.getElementById("recordDate").value;
         loadSnapshotByDate(date);
+      }
+
+      async function deleteSnapshot() {
+        if (GUEST_MODE) {
+          alert("Guest mode: delete is disabled. Sign in to manage snapshots.");
+          return;
+        }
+        const selectedDate = document.getElementById("recordDate").value;
+        const displayed = currentRenderedSnapshotDate || "";
+        const hasDisplayed = (financialData.snapshots || []).some((s) => s.date === displayed);
+        const hasSelected = (financialData.snapshots || []).some((s) => s.date === selectedDate);
+        const target = hasDisplayed ? displayed : (hasSelected ? selectedDate : "");
+        if (!target) {
+          alert("No snapshot to delete for this date.");
+          return;
+        }
+        if (!confirm(`Delete snapshot for ${target}? This cannot be undone.`)) return;
+
+        // Remove locally
+        financialData.snapshots = (financialData.snapshots || []).filter((s) => s.date !== target);
+        localStorage.setItem("financialData", JSON.stringify(financialData));
+
+        // Delete from backend if authenticated
+        try {
+          if (auth0Client && (await auth0Client.isAuthenticated())) {
+            await apiFetch(`/snapshots/${encodeURIComponent(target)}`, { method: "DELETE" });
+            try { await syncFromCloud(); } catch (_) {}
+          }
+        } catch (e) {
+          console.warn("Cloud delete failed:", e);
+        }
+
+        // Re-render: try the nearest snapshot for the currently selected date, or blank
+        const nextSnap = getNearestSnapshotForDate(selectedDate);
+        if (nextSnap) {
+          renderSnapshotToForm(nextSnap, { keepCurrentDate: true });
+        } else {
+          renderBlankState(true);
+        }
+        try { if (datePicker) datePicker.redraw(); } catch(_) {}
+        try { if (comparePicker) comparePicker.redraw(); } catch(_) {}
+        updateChart();
+        alert(`Snapshot ${target} deleted.`);
       }
 
       function formatCAD(amount) {
