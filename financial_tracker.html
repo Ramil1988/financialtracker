@@ -274,6 +274,8 @@
       <div class="date-selector">
         <label>Record Date:</label>
         <input type="text" id="recordDate" value="" placeholder="YYYY-MM-DD" />
+        <label style="margin-left:12px;">Compare From:</label>
+        <input type="text" id="compareDate" value="" placeholder="YYYY-MM-DD" />
         <span style="margin:0 10px; color:#555" id="user-info"></span>
         <button id="btn-logout" class="btn" style="background:#555">🚪 Logout</button>
         <button class="btn" onclick="loadSnapshot()">🔄 Load Snapshot</button>
@@ -684,6 +686,7 @@
         .toISOString()
         .split("T")[0];
       let datePicker = null;
+      let comparePicker = null;
       function initDatePicker() {
         if (!window.flatpickr) return;
         if (datePicker) { try { datePicker.destroy(); } catch(_) {} }
@@ -724,6 +727,44 @@
             } catch(_) {}
           }
         });
+
+        // Initialize compare picker
+        if (comparePicker) { try { comparePicker.destroy(); } catch(_) {} }
+        comparePicker = flatpickr("#compareDate", {
+          dateFormat: "Y-m-d",
+          altInput: true,
+          altFormat: "d.m.y",
+          defaultDate: document.getElementById("compareDate").value || null,
+          disableMobile: true,
+          onChange: (selectedDates, dateStr) => {
+            const input = document.getElementById("compareDate");
+            input.value = dateStr;
+            calculateTotals();
+          },
+          onDayCreate: function(dObj, dStr, fp, dayElem) {
+            const d = dayElem.dateObj;
+            const ymd = fp.formatDate(d, "Y-m-d");
+            if ((financialData.snapshots || []).some((s) => s.date === ymd)) {
+              dayElem.classList.add("has-snapshot");
+            }
+          },
+          onReady: function(selectedDates, dateStr, fp) {
+            const orig = document.getElementById("compareDate");
+            if (orig) {
+              orig.style.position = "absolute";
+              orig.style.left = "-9999px";
+              orig.style.width = "0";
+              orig.style.opacity = "0";
+            }
+            try {
+              const alt = fp.altInput;
+              if (alt) {
+                alt.style.width = "220px";
+                alt.style.display = "inline-block";
+              }
+            } catch(_) {}
+          }
+        });
       }
 
       // Хранилище данных
@@ -741,6 +782,12 @@
           if (snap) {
             renderSnapshotToForm(snap, { keepCurrentDate: true });
             updateChart();
+          }
+          // If compare date empty, default to previous snapshot before selected date
+          const cmpInput = document.getElementById("compareDate");
+          if (cmpInput && !cmpInput.value) {
+            const prev = getPreviousSnapshotForDate(d);
+            if (prev && comparePicker) comparePicker.setDate(prev.date, false);
           }
         });
       })();
