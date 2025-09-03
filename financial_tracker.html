@@ -593,6 +593,8 @@
           const user = await auth0Client.getUser();
           userInfo.textContent = user && (user.name || user.email) ? `Hello, ${user.name || user.email}` : "";
           logoutBtn.style.display = "inline-block";
+          // App became visible; ensure chart sizes and renders correctly
+          requestAnimationFrame(() => updateChart());
         } else {
           app.classList.add("hidden");
           landing.classList.remove("hidden");
@@ -1060,8 +1062,19 @@
         const canvas = document.getElementById("netWorthChart");
         const ctx = canvas.getContext("2d");
 
+        // Determine a sane drawing width even if container just became visible
+        const container = canvas.parentElement;
+        const availableWidth = Math.max(
+          320,
+          canvas.clientWidth || canvas.offsetWidth || container.clientWidth || container.offsetWidth || 600
+        );
+        canvas.width = availableWidth;
+        canvas.height = 300;
+
         if (financialData.snapshots.length === 0) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.fillStyle = "#666";
+          ctx.font = "14px Arial";
           ctx.fillText(
             "No data to display",
             canvas.width / 2 - 70,
@@ -1075,9 +1088,6 @@
         const maxValue = Math.max(...snapshots.map((s) => s.netWorth));
         const minValue = Math.min(...snapshots.map((s) => s.netWorth));
         const range = maxValue - minValue || 1;
-
-        canvas.width = canvas.offsetWidth;
-        canvas.height = 300;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.strokeStyle = "#667eea";
@@ -1115,6 +1125,14 @@
 
         ctx.stroke();
       }
+
+      // Re-render chart on window resize to match container width
+      window.addEventListener("resize", () => {
+        const app = document.getElementById("app-container");
+        if (!app.classList.contains("hidden")) {
+          updateChart();
+        }
+      });
 
       function exportToExcel() {
         // Создание детального CSV для экспорта
