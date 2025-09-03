@@ -113,7 +113,10 @@
       }
 
       /* Keep wide tables from overflowing the layout */
-      .section { overflow-x: auto; }
+      .section {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
 
       table {
         width: 100%;
@@ -128,7 +131,21 @@
         padding: 12px;
         text-align: left;
         border-bottom: 1px solid #e0e0e0;
-        word-break: break-word; /* avoid long content pushing width */
+        word-break: normal;
+        white-space: nowrap; /* do not stack letters; allow horizontal scroll instead */
+        vertical-align: middle;
+      }
+
+      /* Ensure tables have a reasonable minimum width so columns stay readable */
+      #assetsTable,
+      #liabilitiesTable {
+        min-width: 900px;
+      }
+
+      /* Tighter spacing/typography on small screens */
+      @media (max-width: 768px) {
+        .container { padding: 16px; }
+        th, td { padding: 8px; font-size: 13px; }
       }
 
       th {
