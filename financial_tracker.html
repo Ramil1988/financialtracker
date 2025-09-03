@@ -660,7 +660,7 @@
         .split("T")[0];
 
       // Хранилище данных
-      let financialData = JSON.parse(
+  let financialData = JSON.parse(
         localStorage.getItem("financialData") || '{"snapshots": []}'
       );
 
@@ -851,7 +851,7 @@
         }
       }
 
-      function saveSnapshot() {
+      async function saveSnapshot() {
         const date = document.getElementById("recordDate").value;
         if (!date) {
           alert("Please select a date");
@@ -911,7 +911,22 @@
         financialData.snapshots.push(snapshot);
         localStorage.setItem("financialData", JSON.stringify(financialData));
 
-        alert("Data saved successfully!");
+        // Try to sync to backend (ignore if not logged in)
+        let cloudMsg = "";
+        try {
+          if (auth0Client && (await auth0Client.isAuthenticated())) {
+            await apiFetch("/snapshots", {
+              method: "POST",
+              body: JSON.stringify({ snapshot }),
+            });
+            cloudMsg = " Synced to cloud.";
+          }
+        } catch (e) {
+          console.warn("Cloud sync failed:", e);
+          cloudMsg = " (Cloud sync failed)";
+        }
+
+        alert("Data saved successfully!" + cloudMsg);
         updateChart();
       }
 
@@ -1020,6 +1035,30 @@
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download =
+      // Call backend API with Auth0 token
+      async function apiFetch(path, options = {}) {
+        if (!auth0Client) throw new Error("Auth not initialized");
+        const isAuth = await auth0Client.isAuthenticated();
+        if (!isAuth) throw new Error("Not authenticated");
+        const token = await auth0Client.getTokenSilently({
+          authorizationParams: { audience: authConfig.audience },
+        });
+        const res = await fetch(`/api${path}`, {
+          ...options,
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+            ...(options.headers || {}),
+          },
+        });
+        if (!res.ok) {
+          const text = await res.text().catch(() => "");
+          throw new Error(`API ${res.status}: ${text}`);
+        }
+        const ct = res.headers.get("content-type") || "";
+        return ct.includes("application/json") ? res.json() : res.text();
+      }
+
           "financial_tracker_" +
           new Date().toISOString().split("T")[0] +
           ".csv";
