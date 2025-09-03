@@ -271,7 +271,7 @@
           <div class="amount negative" id="totalLiabilities">CAD $0</div>
         </div>
         <div class="card">
-          <h3>Net Worth</h3>
+          <h3>Equity (Assets - Liabilities)</h3>
           <div class="amount" id="netWorth">CAD $0</div>
         </div>
         <div class="card">
@@ -279,7 +279,7 @@
           <div class="amount" id="debtRatio">0%</div>
         </div>
         <div class="card">
-          <h3>Period Change</h3>
+          <h3>Assets Change vs Prev</h3>
           <div class="amount" id="periodChange">CAD $0</div>
         </div>
       </div>
@@ -548,31 +548,7 @@
           </div>
         </div>
 
-        <div class="metric-box">
-          <h3>🎯 Debt Repayment Progress</h3>
-          <div>
-            <div class="metric-item">
-              <span>Mortgage Paid:</span>
-              <span id="mortgageProgress">0%</span>
-            </div>
-            <div class="progress-bar">
-              <div
-                class="progress-fill"
-                id="mortgageBar"
-                style="width: 0%"
-              ></div>
-            </div>
-          </div>
-          <div style="margin-top: 15px">
-            <div class="metric-item">
-              <span>Car Loan Paid:</span>
-              <span id="autoProgress">0%</span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-fill" id="autoBar" style="width: 0%"></div>
-            </div>
-          </div>
-        </div>
+        
       </div>
 
       <div class="chart-container">
@@ -796,6 +772,15 @@
         return best;
       }
 
+      function getPreviousSnapshotForDate(date) {
+        const snaps = Array.isArray(financialData.snapshots) ? financialData.snapshots : [];
+        const prior = snaps
+          .filter((s) => s.date && s.date < date)
+          .sort((a, b) => (a.date > b.date ? 1 : a.date < b.date ? -1 : 0))
+          .slice(-1)[0];
+        return prior || null;
+      }
+
       // Find and load snapshot by selected date
       async function loadSnapshotByDate(date) {
         if (!date) return;
@@ -973,37 +958,15 @@
         document.getElementById("totalDebt").textContent =
           formatCAD(totalLiabilities);
 
-        // Прогресс погашения ипотеки (предполагаем изначальную сумму)
-        if (homeValue > 0) {
-          const mortgageProgress =
-            ((homeValue - mortgageDebt) / homeValue) * 100;
-          document.getElementById("mortgageProgress").textContent =
-            mortgageProgress.toFixed(1) + "%";
-          document.getElementById("mortgageBar").style.width =
-            mortgageProgress + "%";
-        }
-
-        // Прогресс погашения автокредита (предполагаем, что машина стоила примерно столько же)
-        const carValue = 35000; // текущая стоимость
-        const originalCarLoan = 50000; // предполагаемая изначальная стоимость
-        if (autoDebt > 0) {
-          const autoProgress =
-            ((originalCarLoan - autoDebt) / originalCarLoan) * 100;
-          document.getElementById("autoProgress").textContent =
-            autoProgress.toFixed(1) + "%";
-          document.getElementById("autoBar").style.width = autoProgress + "%";
-        }
-
-        // Расчет изменения за период
-        if (financialData.snapshots.length > 0) {
-          const lastSnapshot =
-            financialData.snapshots[financialData.snapshots.length - 1];
-          const change = netWorth - lastSnapshot.netWorth;
-          document.getElementById("periodChange").textContent =
-            (change >= 0 ? "+" : "") + formatCAD(change);
-          document.getElementById("periodChange").className =
-            change >= 0 ? "amount positive" : "amount negative";
-        }
+        // Изменение активов относительно предыдущего снимка (по выбранной дате)
+        (function updateAssetsChangeVsPrev() {
+          const currentDate = document.getElementById("recordDate").value;
+          const prev = getPreviousSnapshotForDate(currentDate);
+          const change = prev ? totalAssets - (prev.totalAssets || 0) : 0;
+          const el = document.getElementById("periodChange");
+          el.textContent = (change >= 0 ? "+" : "") + formatCAD(change);
+          el.className = change >= 0 ? "amount positive" : "amount negative";
+        })();
       }
 
       async function saveSnapshot() {
