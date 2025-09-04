@@ -269,6 +269,7 @@
         box-shadow: 0 4px 14px rgba(0,0,0,0.06);
       }
       .date-selector label { white-space: nowrap; color: #333; }
+      .currency-note { color:#666; font-size: 12px; margin-left:8px; }
       .date-selector input {
         margin: 0 10px;
         padding: 10px;
@@ -282,6 +283,7 @@
         #recordDate,
         #compareDate,
         .date-selector .btn { width: 100% !important; }
+        .currency-note { align-self:flex-start; margin-left:0; }
       }
 
       .metrics-grid {
@@ -344,6 +346,7 @@
         <input type="text" id="recordDate" value="" placeholder="YYYY-MM-DD" />
         <label style="margin-left:12px;">Compare From:</label>
         <input type="text" id="compareDate" value="" placeholder="YYYY-MM-DD" />
+        <span class="currency-note">All amounts in CAD</span>
         <span style="margin:0 10px; color:#555" id="user-info"></span>
         <button id="btn-logout" class="btn" style="background:#555">🚪 Logout</button>
         <button id="btn-load" class="btn" onclick="loadSnapshot()">🔄 Load Snapshot</button>
@@ -357,15 +360,15 @@
       <div class="summary-cards">
         <div class="card">
           <h3>Total Assets</h3>
-          <div class="amount positive" id="totalAssets">CAD $0</div>
+          <div class="amount positive" id="totalAssets">$0</div>
         </div>
         <div class="card">
           <h3>Total Liabilities</h3>
-          <div class="amount negative" id="totalLiabilities">CAD $0</div>
+          <div class="amount negative" id="totalLiabilities">$0</div>
         </div>
         <div class="card">
           <h3>Equity (Assets - Liabilities)</h3>
-          <div class="amount" id="netWorth">CAD $0</div>
+          <div class="amount" id="netWorth">$0</div>
         </div>
         <div class="card">
           <h3>Debt-to-Assets Ratio</h3>
@@ -373,7 +376,7 @@
         </div>
         <div class="card">
           <h3>Assets Change <span id="periodChangeLeft">—</span> vs <span id="periodChangeRight">—</span></h3>
-          <div class="amount" id="periodChange">CAD $0</div>
+          <div class="amount" id="periodChange">$0</div>
         </div>
       </div>
 
@@ -387,7 +390,7 @@
             <tr>
               <th>Category</th>
               <th>Name</th>
-              <th>Amount (CAD $)</th>
+              <th>Amount ($)</th>
               <th>% of Assets</th>
               <th>Note</th>
               <th>Action</th>
@@ -555,7 +558,7 @@
             <tr>
               <th>Debt Type</th>
               <th>Creditor</th>
-              <th>Outstanding Balance (CAD $)</th>
+              <th>Outstanding Balance ($)</th>
               <th>Monthly Payment</th>
               <th>Interest Rate</th>
               <th>Action</th>
@@ -625,19 +628,19 @@
           <h3>📊 Key Metrics</h3>
           <div class="metric-item">
             <span>Home Equity:</span>
-            <span id="homeEquity">CAD $0</span>
+            <span id="homeEquity">$0</span>
           </div>
           <div class="metric-item">
             <span>Liquid Assets:</span>
-            <span id="liquidAssets">CAD $0</span>
+            <span id="liquidAssets">$0</span>
           </div>
           <div class="metric-item">
             <span>Investments (RRSP/TFSA):</span>
-            <span id="investments">CAD $0</span>
+            <span id="investments">$0</span>
           </div>
           <div class="metric-item">
             <span>Total Debt:</span>
-            <span id="totalDebt">CAD $0</span>
+            <span id="totalDebt">$0</span>
           </div>
         </div>
 
@@ -988,7 +991,7 @@
         setLabels("#assetsTable", [
           "Category",
           "Name",
-          "Amount (CAD $)",
+          "Amount ($)",
           "% of Assets",
           "Note",
           "Action",
@@ -996,7 +999,7 @@
         setLabels("#liabilitiesTable", [
           "Debt Type",
           "Creditor",
-          "Outstanding Balance (CAD $)",
+          "Outstanding Balance ($)",
           "Monthly Payment",
           "Interest Rate",
           "Action",
@@ -1148,7 +1151,7 @@
 
       function formatCAD(amount) {
         return (
-          "CAD $" +
+          "$" +
           Math.abs(amount).toLocaleString("en-CA", {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0,
@@ -1452,10 +1455,10 @@
                 grid: { display: false },
               },
               y: {
-                title: { display: true, text: "CAD" },
+                title: { display: true, text: "$" },
                 ticks: {
                   callback: (v) => {
-                    try { return formatCAD(v).replace("CAD ", "$"); } catch { return v; }
+                    try { return formatCAD(v); } catch { return v; }
                   },
                 },
               },
