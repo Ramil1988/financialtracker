@@ -240,6 +240,8 @@
         border: 1px solid #ddd;
         background: #fff;
         font-size: 14px;
+        width: 220px !important; /* compact width */
+        display: inline-block;
       }
 
       /* Dropdown actions styling */
@@ -385,6 +387,7 @@
         <input type="text" id="compareDate" value="" placeholder="YYYY-MM-DD" />
         <span class="currency-note">All amounts in CAD</span>
         <span style="margin:0 10px; color:#555" id="user-info"></span>
+        <button id="btn-logout" class="btn" style="background:#555">🚪 Logout</button>
         <select id="actionMenu" class="action-select" onchange="handleAction(this.value)">
           <option value="">⚙️ Actions…</option>
           <option value="load">🔄 Load Snapshot</option>
@@ -798,6 +801,7 @@
         const app = document.getElementById("app-container");
         const userInfo = document.getElementById("user-info");
         const actionMenu = document.getElementById("actionMenu");
+        const logoutBtn = document.getElementById("btn-logout");
         landing.classList.add("hidden");
         app.classList.remove("hidden");
         if (userInfo) userInfo.textContent = "Guest";
@@ -807,6 +811,7 @@
             if (["save","load","delete"].includes(opt.value)) opt.disabled = true;
           });
         }
+        if (logoutBtn) logoutBtn.style.display = "none";
         // Fresh in-memory data only
         financialData = { snapshots: [] };
         renderBlankState(true);
@@ -1353,11 +1358,39 @@
         input._wired = true;
         // Initialize formatted display
         input.value = formatThousands(parseAmount(input.value));
+
+        function caretPosForDigits(str, digitCountFromStart) {
+          // Return index in str where the Nth digit appears (counting from 1)
+          if (digitCountFromStart <= 0) return 0;
+          let seen = 0;
+          for (let i = 0; i < str.length; i++) {
+            if (/\d/.test(str[i])) {
+              seen++;
+              if (seen === digitCountFromStart) return i + 1; // place after that digit
+            }
+          }
+          return str.length;
+        }
+
         input.addEventListener("input", (e) => {
-          // Allow digits, space, comma, dot and minus
-          const raw = e.target.value || "";
-          e.target.value = raw.replace(/[^0-9.,\-\s]/g, "");
+          const el = e.target;
+          const value = el.value || "";
+          // Count how many digits were to the left of the caret
+          const selEnd = el.selectionEnd || value.length;
+          const leftDigits = (value.slice(0, selEnd).match(/\d/g) || []).length;
+
+          const num = parseAmount(value);
+          const formatted = formatThousands(num);
+          el.value = formatted;
+
+          // Restore caret near where the user was typing
+          const newPos = caretPosForDigits(formatted, leftDigits);
+          try { el.setSelectionRange(newPos, newPos); } catch(_) {}
+
+          // Live recompute totals and percentages
+          calculateTotals();
         });
+
         input.addEventListener("blur", (e) => {
           e.target.value = formatThousands(parseAmount(e.target.value));
           calculateTotals();
