@@ -24,19 +24,60 @@
 
       .hidden { display: none; }
 
+      /* Landing page shell */
       .landing {
-        max-width: 800px;
-        margin: 10vh auto 0;
-        background: rgba(255,255,255,0.95);
+        max-width: 1100px;
+        margin: 5vh auto 0;
+        background: radial-gradient(1200px 600px at 10% -20%, rgba(118,75,162,0.20), transparent 60%),
+                    radial-gradient(900px 500px at 110% 10%, rgba(102,126,234,0.18), transparent 60%),
+                    rgba(255,255,255,0.96);
+        border-radius: 20px;
+        padding: 36px;
+        box-shadow: 0 24px 70px rgba(0,0,0,0.25);
+      }
+      .landing h1 { margin-bottom: 12px; }
+      .landing p { color: #3b3b3b; margin: 10px 0 24px; }
+      .landing small { color:#666; }
+
+      .landing-hero {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 28px;
+        align-items: center;
+      }
+      .hero-eyebrow { color:#764ba2; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; font-size: 12px; }
+      .hero-title { font-size: 40px; line-height: 1.1; color:#2d2d2d; }
+      .hero-sub { font-size: 16px; color:#494949; }
+      .hero-cta { display:flex; gap: 12px; align-items:center; flex-wrap: wrap; margin-top: 8px; }
+      .hero-cta .btn { padding: 12px 18px; font-weight: 600; }
+      .btn-ghost { background: transparent; color:#5a5a5a; border:1px solid #d9d9d9; }
+      .hero-media {
+        position: relative;
         border-radius: 16px;
-        padding: 40px;
-        text-align: center;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        overflow: hidden;
+        box-shadow: 0 16px 40px rgba(0,0,0,0.18);
+        background: #f6f7fb;
+        aspect-ratio: 16/10;
       }
-      .landing h1 {
-        margin-bottom: 10px;
+      .hero-media img { width:100%; height:100%; object-fit: cover; display:block; }
+
+      .landing-features { margin-top: 28px; display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:16px; }
+      .feature-card { background:#ffffff; border: 1px solid #eee; border-radius: 14px; padding:16px; box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
+      .feature-card h3 { font-size: 15px; color:#2e2e2e; margin-bottom: 6px; }
+      .feature-card p { font-size: 13px; color:#5b5b5b; margin:0; }
+      .feature-emoji { font-size: 20px; margin-right: 8px; }
+
+      .landing-footer { margin-top: 20px; text-align:center; color:#666; font-size: 13px; }
+
+      @media (max-width: 980px) {
+        .landing-hero { grid-template-columns: 1fr; }
+        .hero-title { font-size: 34px; }
+        .landing-features { grid-template-columns: repeat(2, minmax(0,1fr)); }
       }
-      .landing p { color: #444; margin: 10px 0 20px; }
+      @media (max-width: 560px) {
+        .landing { padding: 22px; }
+        .landing-features { grid-template-columns: 1fr; }
+      }
 
       .container {
         max-width: 1200px;
@@ -371,11 +412,50 @@
   </head>
   <body>
     <div id="auth-landing" class="landing">
-      <h1>💰 Financial Tracker</h1>
-      <p>Sign in to start tracking your assets, debts, and net worth.</p>
-      <button id="btn-login" class="btn">🔐 Sign in with Auth0</button>
-      <div style="margin-top:12px">
-        <button id="btn-guest" class="btn" style="background:#27ae60">🧪 Continue without Login</button>
+      <div class="landing-hero">
+        <div>
+          <div class="hero-eyebrow">Personal Finance, Clear and Simple</div>
+          <h1 class="hero-title">Financial Tracker — own your numbers</h1>
+          <p class="hero-sub">
+            Track assets and liabilities, see real equity, and measure progress
+            over time with beautiful snapshots and a clean net‑worth chart.
+            Your data stays yours, secured with Auth0.
+          </p>
+
+          <div class="hero-cta">
+            <button id="btn-login" class="btn">🔐 Sign in with Auth0</button>
+            <button id="btn-guest" class="btn btn-ghost">🧪 Try as Guest</button>
+          </div>
+          <div style="margin-top:6px"><small>No email required for guest mode — data isn’t saved.</small></div>
+        </div>
+        <div class="hero-media" aria-hidden="true">
+          <img alt="App preview"
+               src="https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=1400&auto=format&fit=crop"
+               referrerpolicy="no-referrer" />
+        </div>
+      </div>
+
+      <div class="landing-features">
+        <div class="feature-card">
+          <h3><span class="feature-emoji">📊</span>Net Worth Overview</h3>
+          <p>Instant totals for assets, liabilities and equity with trend chart.</p>
+        </div>
+        <div class="feature-card">
+          <h3><span class="feature-emoji">🗓️</span>Monthly Snapshots</h3>
+          <p>Save dated snapshots and compare changes across any period.</p>
+        </div>
+        <div class="feature-card">
+          <h3><span class="feature-emoji">🔒</span>Secure by Auth0</h3>
+          <p>Private, authenticated access. Only you can see your numbers.</p>
+        </div>
+        <div class="feature-card">
+          <h3><span class="feature-emoji">🧮</span>Flexible Categories</h3>
+          <p>Track cash, investments, real estate, loans, and more.</p>
+        </div>
+      </div>
+
+      <div class="landing-footer">
+        <span>Made for simple, transparent personal finance management.</span>
       </div>
     </div>
 
