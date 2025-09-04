@@ -233,6 +233,24 @@
       }
       tr.dragging { opacity: 0.6; }
 
+      /* Dropdown actions styling */
+      .action-select {
+        padding: 10px 14px;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        background: #fff;
+        font-size: 14px;
+      }
+
+      /* Dropdown actions styling */
+      .action-select {
+        padding: 10px 14px;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        background: #fff;
+        font-size: 14px;
+      }
+
       .chart-container {
         background: white;
         padding: 20px;
@@ -367,13 +385,13 @@
         <input type="text" id="compareDate" value="" placeholder="YYYY-MM-DD" />
         <span class="currency-note">All amounts in CAD</span>
         <span style="margin:0 10px; color:#555" id="user-info"></span>
-        <button id="btn-logout" class="btn" style="background:#555">🚪 Logout</button>
-        <button id="btn-load" class="btn" onclick="loadSnapshot()">🔄 Load Snapshot</button>
-        <button id="btn-delete" class="btn btn-delete" style="background:#c0392b" onclick="deleteSnapshot()">🗑️ Delete Snapshot</button>
-        <button id="btn-save" class="btn" onclick="saveSnapshot()">
-          💾 Save Snapshot
-        </button>
-        
+        <select id="actionMenu" class="action-select" onchange="handleAction(this.value)">
+          <option value="">⚙️ Actions…</option>
+          <option value="load">🔄 Load Snapshot</option>
+          <option value="save">💾 Save Snapshot</option>
+          <option value="delete">🗑️ Delete Snapshot</option>
+          <option value="logout">🚪 Logout</option>
+        </select>
       </div>
 
       <div class="summary-cards">
@@ -708,7 +726,7 @@
           app.classList.remove("hidden");
           const user = await auth0Client.getUser();
           userInfo.textContent = user && (user.name || user.email) ? `Hello, ${user.name || user.email}` : "";
-          logoutBtn.style.display = "inline-block";
+          if (logoutBtn) logoutBtn.style.display = "inline-block";
           // If a different user signed in, reset local data to blank
           try {
             const prevSub = localStorage.getItem("lastUserSub") || "";
@@ -727,7 +745,7 @@
           app.classList.add("hidden");
           landing.classList.remove("hidden");
           userInfo.textContent = "";
-          logoutBtn.style.display = "none";
+          if (logoutBtn) logoutBtn.style.display = "none";
         }
       }
 
@@ -756,7 +774,8 @@
         });
         const guestBtn = document.getElementById("btn-guest");
         if (guestBtn) guestBtn.addEventListener("click", enterGuestMode);
-        document.getElementById("btn-logout").addEventListener("click", () => {
+        const legacyLogout = document.getElementById("btn-logout");
+        if (legacyLogout) legacyLogout.addEventListener("click", () => {
           try { localStorage.removeItem("financialData"); } catch(_) {}
           auth0Client.logout({ logoutParams: { returnTo: window.location.origin + "/financial_tracker.html" } });
         });
@@ -778,17 +797,16 @@
         const landing = document.getElementById("auth-landing");
         const app = document.getElementById("app-container");
         const userInfo = document.getElementById("user-info");
-        const logoutBtn = document.getElementById("btn-logout");
-        const saveBtn = document.getElementById("btn-save");
-        const loadBtn = document.getElementById("btn-load");
-        const delBtn = document.getElementById("btn-delete");
+        const actionMenu = document.getElementById("actionMenu");
         landing.classList.add("hidden");
         app.classList.remove("hidden");
         if (userInfo) userInfo.textContent = "Guest";
-        if (logoutBtn) logoutBtn.style.display = "none";
-        if (saveBtn) { saveBtn.disabled = true; saveBtn.title = "Saving disabled in guest mode"; }
-        if (loadBtn) { loadBtn.disabled = true; loadBtn.title = "Loading disabled in guest mode"; }
-        if (delBtn) { delBtn.disabled = true; delBtn.title = "Delete disabled in guest mode"; }
+        // Disable save/load/delete options in guest mode
+        if (actionMenu) {
+          [...actionMenu.options].forEach(opt => {
+            if (["save","load","delete"].includes(opt.value)) opt.disabled = true;
+          });
+        }
         // Fresh in-memory data only
         financialData = { snapshots: [] };
         renderBlankState(true);
@@ -1542,6 +1560,31 @@
         alert("Data saved successfully!" + cloudMsg);
         try { if (datePicker) datePicker.redraw(); } catch(_) {}
         updateChart();
+      }
+
+      // Handle actions dropdown
+      function handleAction(val) {
+        const select = document.getElementById('actionMenu');
+        try { select.value = ''; } catch(_) {}
+        if (!val) return;
+        if (val === 'load') {
+          if (GUEST_MODE) { alert('Guest mode: loading is disabled.'); return; }
+          return loadSnapshot();
+        }
+        if (val === 'save') {
+          if (GUEST_MODE) { alert('Guest mode: saving is disabled.'); return; }
+          return saveSnapshot();
+        }
+        if (val === 'delete') {
+          if (GUEST_MODE) { alert('Guest mode: delete is disabled.'); return; }
+          return deleteSnapshot();
+        }
+        if (val === 'logout') {
+          if (typeof auth0Client !== 'undefined' && auth0Client) {
+            try { localStorage.removeItem('financialData'); } catch(_) {}
+            return auth0Client.logout({ logoutParams: { returnTo: window.location.origin + '/financial_tracker.html' } });
+          }
+        }
       }
 
       let nwChart;
