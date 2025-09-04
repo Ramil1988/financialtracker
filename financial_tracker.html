@@ -69,10 +69,34 @@
 
       .landing-footer { margin-top: 20px; text-align:center; color:#666; font-size: 13px; }
 
+      /* Extended landing content */
+      .lp-section { margin-top: 34px; }
+      .lp-heading { font-size: 22px; color:#242424; margin-bottom: 8px; }
+      .lp-sub { color:#5b5b5b; margin-bottom: 14px; }
+      .grid-3 { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:16px; }
+      .grid-2 { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:16px; }
+      .lp-card { background:#fff; border:1px solid #eee; border-radius: 14px; padding:16px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+      .lp-card h4 { font-size: 16px; margin-bottom: 6px; }
+      .steps { counter-reset: s; display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:16px; }
+      .step { background:#fff; border:1px solid #eee; border-radius: 14px; padding:16px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); position:relative; }
+      .step:before { counter-increment: s; content: counter(s); position:absolute; left:12px; top:12px; background:#667eea; color:#fff; width:26px; height:26px; border-radius: 7px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; }
+      .gallery { background:#fafbff; border:1px solid #ececff; border-radius: 16px; padding:12px; box-shadow: inset 0 0 0 1px rgba(102,126,234,0.06); }
+      .gallery img { width:100%; border-radius: 12px; display:block; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+      .testimonials { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:16px; }
+      .quote { background:#ffffff; border:1px solid #eee; border-radius: 14px; padding:14px; font-size: 14px; color:#333; box-shadow: 0 8px 24px rgba(0,0,0,0.05); }
+      .faq { display:grid; grid-template-columns: 1fr; gap:10px; }
+      .faq details { background:#fff; border:1px solid #eee; border-radius: 12px; padding:12px 14px; }
+      .cta-banner { margin-top: 24px; background: linear-gradient(120deg, rgba(102,126,234,0.15), rgba(118,75,162,0.15)); border:1px solid #e6e6ff; padding:18px; border-radius: 16px; display:flex; align-items:center; justify-content: space-between; gap:16px; flex-wrap: wrap; }
+      .cta-banner strong { color:#2e2e2e; }
+
       @media (max-width: 980px) {
         .landing-hero { grid-template-columns: 1fr; }
         .hero-title { font-size: 34px; }
         .landing-features { grid-template-columns: repeat(2, minmax(0,1fr)); }
+        .steps { grid-template-columns: 1fr; }
+        .grid-3 { grid-template-columns: 1fr; }
+        .grid-2 { grid-template-columns: 1fr; }
+        .testimonials { grid-template-columns: 1fr; }
       }
       @media (max-width: 560px) {
         .landing { padding: 22px; }
@@ -429,8 +453,9 @@
           <div style="margin-top:6px"><small>No email required for guest mode — data isn’t saved.</small></div>
         </div>
         <div class="hero-media" aria-hidden="true">
-          <img alt="App preview"
-               src="https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=1400&auto=format&fit=crop"
+          <img alt="Financial Tracker screenshot"
+               src="assets/financial-tracker-landing.png"
+               onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=1400&auto=format&fit=crop';"
                referrerpolicy="no-referrer" />
         </div>
       </div>
@@ -451,6 +476,88 @@
         <div class="feature-card">
           <h3><span class="feature-emoji">🧮</span>Flexible Categories</h3>
           <p>Track cash, investments, real estate, loans, and more.</p>
+        </div>
+      </div>
+
+      <!-- How it works -->
+      <div class="lp-section">
+        <h2 class="lp-heading">How It Works</h2>
+        <p class="lp-sub">Three simple steps to keep your finances organized and understandable.</p>
+        <div class="steps">
+          <div class="step">
+            <h4>Add your assets</h4>
+            <p>Cash, accounts, investments, real estate — categorize them and add notes.</p>
+          </div>
+          <div class="step">
+            <h4>Record liabilities</h4>
+            <p>Mortgages, auto loans, credit cards. See debt-to-assets ratio instantly.</p>
+          </div>
+          <div class="step">
+            <h4>Save a snapshot</h4>
+            <p>Pick a date, save, and compare changes month over month to stay on track.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Big gallery screenshot using your attached image -->
+      <div class="lp-section">
+        <h2 class="lp-heading">Product Preview</h2>
+        <p class="lp-sub">A clean workspace that surfaces the numbers you need, without clutter.</p>
+        <div class="gallery">
+          <img alt="Financial Tracker UI preview"
+               src="assets/financial-tracker-landing.png"
+               onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=1400&auto=format&fit=crop';" />
+        </div>
+      </div>
+
+      <!-- Extra benefits -->
+      <div class="lp-section">
+        <h2 class="lp-heading">Why You’ll Love It</h2>
+        <div class="grid-3">
+          <div class="lp-card"><h4>Drag & drop rows</h4><p>Reorder assets and debts to fit how you think.</p></div>
+          <div class="lp-card"><h4>Percent of total</h4><p>See each asset’s weight to quickly rebalance.</p></div>
+          <div class="lp-card"><h4>Compare any period</h4><p>Pick a date to compare — we show change automatically.</p></div>
+          <div class="lp-card"><h4>Mobile friendly</h4><p>Responsive layout converts tables into tidy cards.</p></div>
+          <div class="lp-card"><h4>Local first</h4><p>Data is saved in your browser; sync to cloud when signed in.</p></div>
+          <div class="lp-card"><h4>Export-ready</h4><p>Numbers are formatted consistently for pasting to spreadsheets.</p></div>
+        </div>
+      </div>
+
+      <!-- Testimonials (lightweight placeholders) -->
+      <div class="lp-section">
+        <h2 class="lp-heading">What People Say</h2>
+        <div class="testimonials">
+          <div class="quote">“Exactly the level of detail I needed to track my net worth.”</div>
+          <div class="quote">“Snapshots make month‑over‑month reviews fast and motivating.”</div>
+          <div class="quote">“Clear, private, and simple — love the Auth0 sign‑in.”</div>
+        </div>
+      </div>
+
+      <!-- FAQ -->
+      <div class="lp-section">
+        <h2 class="lp-heading">FAQ</h2>
+        <div class="faq">
+          <details>
+            <summary>Is guest mode safe?</summary>
+            <p>Yes — data stays only in your browser and is not synced.</p>
+          </details>
+          <details>
+            <summary>What happens when I sign in?</summary>
+            <p>We securely sync your snapshots to the cloud so you can access them across devices.</p>
+          </details>
+          <details>
+            <summary>Can I delete my data?</summary>
+            <p>Absolutely. You can delete any snapshot at any time from the Actions menu.</p>
+          </details>
+        </div>
+      </div>
+
+      <!-- Bottom CTA -->
+      <div class="cta-banner">
+        <strong>Ready to take control of your finances?</strong>
+        <div class="hero-cta">
+          <button id="btn-login" class="btn">🔐 Sign in with Auth0</button>
+          <button id="btn-guest" class="btn btn-ghost">🧪 Try as Guest</button>
         </div>
       </div>
 
