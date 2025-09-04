@@ -1203,6 +1203,7 @@
                 <td><span class="drag-handle" title="Drag to reorder">⇅</span><button class="btn btn-delete" onclick="deleteRow(this)">Delete</button></td>
             `;
         applyResponsiveLabels();
+        initAmountInputs();
         initDragAndHandles();
       }
 
@@ -1227,6 +1228,7 @@
                 <td><span class="drag-handle" title="Drag to reorder">⇅</span><button class="btn btn-delete" onclick="deleteRow(this)">Delete</button></td>
             `;
         applyResponsiveLabels();
+        initAmountInputs();
         initDragAndHandles();
       }
 
@@ -1345,7 +1347,11 @@
       }
 
       function initAmountInputs() {
-        document.querySelectorAll('#assetsTable tbody tr td:nth-child(3) input, #liabilitiesTable tbody tr td:nth-child(3) input').forEach(wireAmountInput);
+        document.querySelectorAll('#assetsTable tbody tr td:nth-child(3) input, #liabilitiesTable tbody tr td:nth-child(3) input').forEach((input)=>{
+          try { input.type = 'text'; } catch(_) {}
+          input.classList.add('amount-input');
+          wireAmountInput(input);
+        });
       }
 
       function calculateTotals() {
@@ -1465,8 +1471,7 @@
         assetRows.forEach((row) => {
           const category = row.cells[0].querySelector("select").value;
           const name = row.cells[1].querySelector("input").value;
-          const amount =
-            parseFloat(row.cells[2].querySelector("input").value) || 0;
+          const amount = parseAmount(row.cells[2].querySelector("input").value);
           const note = row.cells[4].querySelector("input").value;
           if (name && amount > 0) {
             assets.push({ category, name, amount, note });
@@ -1481,8 +1486,7 @@
         liabilityRows.forEach((row) => {
           const type = row.cells[0].querySelector("select").value;
           const creditor = row.cells[1].querySelector("input").value;
-          const amount =
-            parseFloat(row.cells[2].querySelector("input").value) || 0;
+          const amount = parseAmount(row.cells[2].querySelector("input").value);
           const payment =
             parseFloat(row.cells[3].querySelector("input").value) || 0;
           const rate = row.cells[4].querySelector("input").value;
