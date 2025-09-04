@@ -214,6 +214,19 @@
         padding: 5px 10px;
       }
 
+      /* Drag & drop handles */
+      .drag-handle {
+        display: inline-block;
+        margin-right: 8px;
+        padding: 4px 6px;
+        cursor: grab;
+        border-radius: 4px;
+        background: #eef1ff;
+        color: #555;
+        user-select: none;
+      }
+      tr.dragging { opacity: 0.6; }
+
       .chart-container {
         background: white;
         padding: 20px;
@@ -923,7 +936,7 @@
             <td><input type="number" value="${a.amount || 0}" onchange="calculateTotals()" /></td>
             <td class="percentage">0%</td>
             <td><input type="text" value="${(a.note || '').replace(/"/g, '&quot;')}" /></td>
-            <td><button class="btn btn-delete" onclick="deleteRow(this)">Delete</button></td>
+            <td><span class="drag-handle" title="Drag to reorder">⇅</span><button class="btn btn-delete" onclick="deleteRow(this)">Delete</button></td>
           `;
         });
 
@@ -945,7 +958,7 @@
             <td><input type="number" value="${l.amount || 0}" onchange="calculateTotals()" /></td>
             <td><input type="number" value="${l.payment || 0}" /></td>
             <td><input type="text" value="${(l.rate || '').replace(/"/g, '&quot;')}" /></td>
-            <td><button class="btn btn-delete" onclick="deleteRow(this)">Delete</button></td>
+            <td><span class="drag-handle" title="Drag to reorder">⇅</span><button class="btn btn-delete" onclick="deleteRow(this)">Delete</button></td>
           `;
         });
 
@@ -958,6 +971,7 @@
           try { if (datePicker) datePicker.setDate(snapshot.date, false); } catch(_) {}
         }
         applyResponsiveLabels();
+        initDragAndHandles();
         calculateTotals();
       }
 
@@ -973,6 +987,7 @@
           try { addLiabilityRow(); } catch(_) {}
         }
         applyResponsiveLabels();
+        initDragAndHandles();
         calculateTotals();
       }
 
@@ -1179,9 +1194,10 @@
                 <td><input type="number" placeholder="0" onchange="calculateTotals()"></td>
                 <td class="percentage">0%</td>
                 <td><input type="text" placeholder="Note"></td>
-                <td><button class="btn btn-delete" onclick="deleteRow(this)">Delete</button></td>
+                <td><span class="drag-handle" title="Drag to reorder">⇅</span><button class="btn btn-delete" onclick="deleteRow(this)">Delete</button></td>
             `;
         applyResponsiveLabels();
+        initDragAndHandles();
       }
 
       function addLiabilityRow() {
@@ -1202,15 +1218,93 @@
                 <td><input type="number" placeholder="0" onchange="calculateTotals()"></td>
                 <td><input type="number" placeholder="0"></td>
                 <td><input type="text" placeholder="%"></td>
-                <td><button class="btn btn-delete" onclick="deleteRow(this)">Delete</button></td>
+                <td><span class="drag-handle" title="Drag to reorder">⇅</span><button class="btn btn-delete" onclick="deleteRow(this)">Delete</button></td>
             `;
         applyResponsiveLabels();
+        initDragAndHandles();
       }
 
       function deleteRow(btn) {
         btn.closest("tr").remove();
         calculateTotals();
         applyResponsiveLabels();
+        initDragAndHandles();
+      }
+
+      // Insert drag handles and enable drag-n-drop reordering for rows
+      function initDragAndHandles() {
+        ["#assetsTable", "#liabilitiesTable"].forEach((sel) => {
+          const tbody = document.querySelector(`${sel} tbody`);
+          if (!tbody) return;
+          // Add handles if missing
+          tbody.querySelectorAll("tr").forEach((tr) => {
+            tr.setAttribute("draggable", "true");
+            const lastTd = tr.querySelector("td:last-child");
+            if (lastTd && !lastTd.querySelector(".drag-handle")) {
+              const span = document.createElement("span");
+              span.className = "drag-handle";
+              span.title = "Drag to reorder";
+              span.textContent = "⇅";
+              lastTd.insertBefore(span, lastTd.firstChild);
+            }
+          });
+          setupRowDrag(tbody);
+        });
+      }
+
+      let dragAllowed = false;
+      function setupRowDrag(tbody) {
+        if (!tbody || tbody._dragSetup) return;
+        tbody._dragSetup = true;
+
+        tbody.addEventListener("mousedown", (e) => {
+          dragAllowed = !!(e.target && (e.target.classList.contains("drag-handle") || e.target.closest(".drag-handle")));
+        });
+
+        let draggingRow = null;
+
+        tbody.addEventListener("dragstart", (e) => {
+          const tr = e.target.closest("tr");
+          if (!tr || !dragAllowed) {
+            e.preventDefault();
+            return;
+          }
+          draggingRow = tr;
+          tr.classList.add("dragging");
+          e.dataTransfer.effectAllowed = "move";
+          try { e.dataTransfer.setData("text/plain", ""); } catch(_) {}
+        });
+
+        tbody.addEventListener("dragover", (e) => {
+          if (!draggingRow) return;
+          e.preventDefault();
+          const afterEl = getDragAfterElement(tbody, e.clientY);
+          if (afterEl == null) {
+            tbody.appendChild(draggingRow);
+          } else {
+            tbody.insertBefore(draggingRow, afterEl);
+          }
+        });
+
+        tbody.addEventListener("dragend", () => {
+          if (draggingRow) draggingRow.classList.remove("dragging");
+          draggingRow = null;
+          dragAllowed = false;
+          calculateTotals();
+        });
+      }
+
+      function getDragAfterElement(container, y) {
+        const elements = [...container.querySelectorAll("tr:not(.dragging)")];
+        let closest = { offset: Number.NEGATIVE_INFINITY, element: null };
+        elements.forEach((el) => {
+          const box = el.getBoundingClientRect();
+          const offset = y - (box.top + box.height / 2);
+          if (offset < 0 && offset > closest.offset) {
+            closest = { offset, element: el };
+          }
+        });
+        return closest.element;
       }
 
       function calculateTotals() {
@@ -1507,6 +1601,7 @@
       // Инициализация (after DOM is ready and SDK loaded)
       window.addEventListener("DOMContentLoaded", async () => {
         applyResponsiveLabels();
+        initDragAndHandles();
         calculateTotals();
         updateChart();
         try { await initAuth(); } catch (e) { console.error(e); }
