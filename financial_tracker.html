@@ -189,6 +189,12 @@
         text-align: right;
       }
 
+      .amount-input {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: "tnum";
+      }
+
       .btn {
         background: linear-gradient(135deg, #667eea, #764ba2);
         color: white;
@@ -933,7 +939,7 @@
               </select>
             </td>
             <td><input type="text" value="${(a.name || '').replace(/"/g, '&quot;')}" /></td>
-            <td><input type="number" value="${a.amount || 0}" onchange="calculateTotals()" /></td>
+            <td><input class="amount-input" type="text" value="${formatThousands(a.amount || 0)}" onchange="calculateTotals()" /></td>
             <td class="percentage">0%</td>
             <td><input type="text" value="${(a.note || '').replace(/"/g, '&quot;')}" /></td>
             <td><span class="drag-handle" title="Drag to reorder">⇅</span><button class="btn btn-delete" onclick="deleteRow(this)">Delete</button></td>
@@ -955,7 +961,7 @@
               </select>
             </td>
             <td><input type="text" value="${(l.creditor || '').replace(/"/g, '&quot;')}" /></td>
-            <td><input type="number" value="${l.amount || 0}" onchange="calculateTotals()" /></td>
+            <td><input class="amount-input" type="text" value="${formatThousands(l.amount || 0)}" onchange="calculateTotals()" /></td>
             <td><input type="number" value="${l.payment || 0}" /></td>
             <td><input type="text" value="${(l.rate || '').replace(/"/g, '&quot;')}" /></td>
             <td><span class="drag-handle" title="Drag to reorder">⇅</span><button class="btn btn-delete" onclick="deleteRow(this)">Delete</button></td>
@@ -1191,7 +1197,7 @@
                     </select>
                 </td>
                 <td><input type="text" placeholder="Name"></td>
-                <td><input type="number" placeholder="0" onchange="calculateTotals()"></td>
+                <td><input class="amount-input" type="text" placeholder="0" onchange="calculateTotals()"></td>
                 <td class="percentage">0%</td>
                 <td><input type="text" placeholder="Note"></td>
                 <td><span class="drag-handle" title="Drag to reorder">⇅</span><button class="btn btn-delete" onclick="deleteRow(this)">Delete</button></td>
@@ -1215,7 +1221,7 @@
                     </select>
                 </td>
                 <td><input type="text" placeholder="Bank/Creditor Name"></td>
-                <td><input type="number" placeholder="0" onchange="calculateTotals()"></td>
+                <td><input class="amount-input" type="text" placeholder="0" onchange="calculateTotals()"></td>
                 <td><input type="number" placeholder="0"></td>
                 <td><input type="text" placeholder="%"></td>
                 <td><span class="drag-handle" title="Drag to reorder">⇅</span><button class="btn btn-delete" onclick="deleteRow(this)">Delete</button></td>
@@ -1307,6 +1313,41 @@
         return closest.element;
       }
 
+      function parseAmount(val) {
+        if (typeof val !== "string") val = String(val ?? "");
+        const cleaned = val.replace(/[^0-9.,\-\s]/g, "").replace(/[\s,]/g, "");
+        const num = parseFloat(cleaned);
+        return isFinite(num) ? num : 0;
+      }
+
+      function formatThousands(num) {
+        try {
+          return new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(Number(num || 0)).replace(/,/g, " ");
+        } catch {
+          return String(num || 0);
+        }
+      }
+
+      function wireAmountInput(input) {
+        if (!input || input._wired) return;
+        input._wired = true;
+        // Initialize formatted display
+        input.value = formatThousands(parseAmount(input.value));
+        input.addEventListener("input", (e) => {
+          // Allow digits, space, comma, dot and minus
+          const raw = e.target.value || "";
+          e.target.value = raw.replace(/[^0-9.,\-\s]/g, "");
+        });
+        input.addEventListener("blur", (e) => {
+          e.target.value = formatThousands(parseAmount(e.target.value));
+          calculateTotals();
+        });
+      }
+
+      function initAmountInputs() {
+        document.querySelectorAll('#assetsTable tbody tr td:nth-child(3) input, #liabilitiesTable tbody tr td:nth-child(3) input').forEach(wireAmountInput);
+      }
+
       function calculateTotals() {
         // Подсчет активов
         let totalAssets = 0;
@@ -1317,7 +1358,7 @@
         const rowAmounts = [];
         assetRows.forEach((row) => {
           const category = row.cells[0].querySelector("select").value;
-          const amount = parseFloat(row.cells[2].querySelector("input").value) || 0;
+          const amount = parseAmount(row.cells[2].querySelector("input").value);
           rowAmounts.push(amount);
           totalAssets += amount;
 
@@ -1348,8 +1389,7 @@
         );
         liabilityRows.forEach((row) => {
           const type = row.cells[0].querySelector("select").value;
-          const amount =
-            parseFloat(row.cells[2].querySelector("input").value) || 0;
+          const amount = parseAmount(row.cells[2].querySelector("input").value);
           totalLiabilities += amount;
 
           if (type === "Mortgage") {
@@ -1601,6 +1641,7 @@
       // Инициализация (after DOM is ready and SDK loaded)
       window.addEventListener("DOMContentLoaded", async () => {
         applyResponsiveLabels();
+        initAmountInputs();
         initDragAndHandles();
         calculateTotals();
         updateChart();
