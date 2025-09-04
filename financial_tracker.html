@@ -132,7 +132,7 @@
         text-align: left;
         border-bottom: 1px solid #e0e0e0;
         word-break: normal;
-        white-space: nowrap; /* do not stack letters; allow horizontal scroll instead */
+        white-space: nowrap; /* default: keep in one line on wide screens */
         vertical-align: middle;
       }
 
@@ -145,7 +145,18 @@
       /* Tighter spacing/typography on small screens */
       @media (max-width: 768px) {
         .container { padding: 16px; }
-        th, td { padding: 8px; font-size: 13px; }
+        /* Card-style rows on mobile */
+        .section { overflow-x: visible; }
+        table thead { display: none; }
+        #assetsTable, #liabilitiesTable { min-width: 0; width: 100%; }
+        table, tbody, tr, td { display: block; width: 100%; }
+        tbody tr { background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 10px 12px; margin: 12px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        tbody tr td { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; white-space: normal; }
+        tbody tr td::before { content: attr(data-label); font-weight: 600; color: #555; margin-right: 12px; }
+        tbody tr td input[type="text"],
+        tbody tr td input[type="number"],
+        tbody tr td select { width: 55%; }
+        .btn.btn-delete { align-self: flex-start; }
       }
 
       th {
@@ -943,6 +954,7 @@
           document.getElementById("recordDate").value = snapshot.date;
           try { if (datePicker) datePicker.setDate(snapshot.date, false); } catch(_) {}
         }
+        applyResponsiveLabels();
         calculateTotals();
       }
 
@@ -957,7 +969,38 @@
           try { addAssetRow(); } catch(_) {}
           try { addLiabilityRow(); } catch(_) {}
         }
+        applyResponsiveLabels();
         calculateTotals();
+      }
+
+      // Apply data-label attributes for responsive card view on mobile
+      function applyResponsiveLabels() {
+        const setLabels = (selector, labels) => {
+          const tbody = document.querySelector(selector + " tbody");
+          if (!tbody) return;
+          tbody.querySelectorAll("tr").forEach((tr) => {
+            const tds = tr.querySelectorAll("td");
+            labels.forEach((label, idx) => {
+              if (tds[idx]) tds[idx].setAttribute("data-label", label);
+            });
+          });
+        };
+        setLabels("#assetsTable", [
+          "Category",
+          "Name",
+          "Amount (CAD $)",
+          "% of Assets",
+          "Note",
+          "Action",
+        ]);
+        setLabels("#liabilitiesTable", [
+          "Debt Type",
+          "Creditor",
+          "Outstanding Balance (CAD $)",
+          "Monthly Payment",
+          "Interest Rate",
+          "Action",
+        ]);
       }
 
       // Pull snapshots from API, persist locally, and render last
@@ -1135,6 +1178,7 @@
                 <td><input type="text" placeholder="Note"></td>
                 <td><button class="btn btn-delete" onclick="deleteRow(this)">Delete</button></td>
             `;
+        applyResponsiveLabels();
       }
 
       function addLiabilityRow() {
@@ -1157,11 +1201,13 @@
                 <td><input type="text" placeholder="%"></td>
                 <td><button class="btn btn-delete" onclick="deleteRow(this)">Delete</button></td>
             `;
+        applyResponsiveLabels();
       }
 
       function deleteRow(btn) {
         btn.closest("tr").remove();
         calculateTotals();
+        applyResponsiveLabels();
       }
 
       function calculateTotals() {
@@ -1457,6 +1503,7 @@
 
       // Инициализация (after DOM is ready and SDK loaded)
       window.addEventListener("DOMContentLoaded", async () => {
+        applyResponsiveLabels();
         calculateTotals();
         updateChart();
         try { await initAuth(); } catch (e) { console.error(e); }
