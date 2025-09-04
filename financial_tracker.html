@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Financial Tracker</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <style>
@@ -22,22 +25,39 @@
         overflow-x: hidden; /* prevent horizontal bleed */
       }
 
-      .hidden { display: none; }
+      .hidden {
+        display: none;
+      }
 
       /* Landing page shell */
       .landing {
         max-width: 1100px;
         margin: 5vh auto 0;
-        background: radial-gradient(1200px 600px at 10% -20%, rgba(118,75,162,0.20), transparent 60%),
-                    radial-gradient(900px 500px at 110% 10%, rgba(102,126,234,0.18), transparent 60%),
-                    rgba(255,255,255,0.96);
+        background: radial-gradient(
+            1200px 600px at 10% -20%,
+            rgba(118, 75, 162, 0.2),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 500px at 110% 10%,
+            rgba(102, 126, 234, 0.18),
+            transparent 60%
+          ),
+          rgba(255, 255, 255, 0.96);
         border-radius: 20px;
         padding: 36px;
-        box-shadow: 0 24px 70px rgba(0,0,0,0.25);
+        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.25);
       }
-      .landing h1 { margin-bottom: 12px; }
-      .landing p { color: #3b3b3b; margin: 10px 0 24px; }
-      .landing small { color:#666; }
+      .landing h1 {
+        margin-bottom: 12px;
+      }
+      .landing p {
+        color: #3b3b3b;
+        margin: 10px 0 24px;
+      }
+      .landing small {
+        color: #666;
+      }
 
       .landing-hero {
         display: grid;
@@ -45,61 +65,222 @@
         gap: 28px;
         align-items: center;
       }
-      .hero-eyebrow { color:#764ba2; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; font-size: 12px; }
-      .hero-title { font-size: 40px; line-height: 1.1; color:#2d2d2d; }
-      .hero-sub { font-size: 16px; color:#494949; }
-      .hero-cta { display:flex; gap: 12px; align-items:center; flex-wrap: wrap; margin-top: 8px; }
-      .hero-cta .btn { padding: 12px 18px; font-weight: 600; }
-      .btn-ghost { background: transparent; color:#5a5a5a; border:1px solid #d9d9d9; }
+      .hero-eyebrow {
+        color: #764ba2;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        font-size: 12px;
+      }
+      .hero-title {
+        font-size: 40px;
+        line-height: 1.1;
+        color: #2d2d2d;
+      }
+      .hero-sub {
+        font-size: 16px;
+        color: #494949;
+      }
+      .hero-cta {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+      .hero-cta .btn {
+        padding: 12px 18px;
+        font-weight: 600;
+      }
+      .btn-ghost {
+        background: transparent;
+        color: #5a5a5a;
+        border: 1px solid #d9d9d9;
+      }
       .hero-media {
         position: relative;
         border-radius: 16px;
         overflow: hidden;
-        box-shadow: 0 16px 40px rgba(0,0,0,0.18);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
         background: #f6f7fb;
         aspect-ratio: 16/10;
       }
-      .hero-media img { width:100%; height:100%; object-fit: cover; display:block; }
+      .hero-media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
 
-      .landing-features { margin-top: 28px; display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:16px; }
-      .feature-card { background:#ffffff; border: 1px solid #eee; border-radius: 14px; padding:16px; box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
-      .feature-card h3 { font-size: 15px; color:#2e2e2e; margin-bottom: 6px; }
-      .feature-card p { font-size: 13px; color:#5b5b5b; margin:0; }
-      .feature-emoji { font-size: 20px; margin-right: 8px; }
+      .landing-features {
+        margin-top: 28px;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .feature-card {
+        background: #ffffff;
+        border: 1px solid #eee;
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+      }
+      .feature-card h3 {
+        font-size: 15px;
+        color: #2e2e2e;
+        margin-bottom: 6px;
+      }
+      .feature-card p {
+        font-size: 13px;
+        color: #5b5b5b;
+        margin: 0;
+      }
+      .feature-emoji {
+        font-size: 20px;
+        margin-right: 8px;
+      }
 
-      .landing-footer { margin-top: 20px; text-align:center; color:#666; font-size: 13px; }
+      .landing-footer {
+        margin-top: 20px;
+        text-align: center;
+        color: #666;
+        font-size: 13px;
+      }
 
       /* Extended landing content */
-      .lp-section { margin-top: 34px; }
-      .lp-heading { font-size: 22px; color:#242424; margin-bottom: 8px; }
-      .lp-sub { color:#5b5b5b; margin-bottom: 14px; }
-      .grid-3 { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:16px; }
-      .grid-2 { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:16px; }
-      .lp-card { background:#fff; border:1px solid #eee; border-radius: 14px; padding:16px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
-      .lp-card h4 { font-size: 16px; margin-bottom: 6px; }
-      .steps { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:16px; }
-      .step { background:#fff; border:1px solid #eee; border-radius: 14px; padding:16px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
-      .gallery { background:#fafbff; border:1px solid #ececff; border-radius: 16px; padding:12px; box-shadow: inset 0 0 0 1px rgba(102,126,234,0.06); }
-      .gallery img { width:100%; border-radius: 12px; display:block; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
-      .testimonials { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:16px; }
-      .quote { background:#ffffff; border:1px solid #eee; border-radius: 14px; padding:14px; font-size: 14px; color:#333; box-shadow: 0 8px 24px rgba(0,0,0,0.05); }
-      .faq { display:grid; grid-template-columns: 1fr; gap:10px; }
-      .faq details { background:#fff; border:1px solid #eee; border-radius: 12px; padding:12px 14px; }
-      .cta-banner { margin-top: 24px; background: linear-gradient(120deg, rgba(102,126,234,0.15), rgba(118,75,162,0.15)); border:1px solid #e6e6ff; padding:18px; border-radius: 16px; display:flex; align-items:center; justify-content: space-between; gap:16px; flex-wrap: wrap; }
-      .cta-banner strong { color:#2e2e2e; }
+      .lp-section {
+        margin-top: 34px;
+      }
+      .lp-heading {
+        font-size: 22px;
+        color: #242424;
+        margin-bottom: 8px;
+      }
+      .lp-sub {
+        color: #5b5b5b;
+        margin-bottom: 14px;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .lp-card {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      }
+      .lp-card h4 {
+        font-size: 16px;
+        margin-bottom: 6px;
+      }
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .step {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      }
+      .gallery {
+        background: #fafbff;
+        border: 1px solid #ececff;
+        border-radius: 16px;
+        padding: 12px;
+        box-shadow: inset 0 0 0 1px rgba(102, 126, 234, 0.06);
+      }
+      .gallery img {
+        width: 100%;
+        border-radius: 12px;
+        display: block;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      }
+      .testimonials {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .quote {
+        background: #ffffff;
+        border: 1px solid #eee;
+        border-radius: 14px;
+        padding: 14px;
+        font-size: 14px;
+        color: #333;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+      }
+      .faq {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .faq details {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        padding: 12px 14px;
+      }
+      .cta-banner {
+        margin-top: 24px;
+        background: linear-gradient(
+          120deg,
+          rgba(102, 126, 234, 0.15),
+          rgba(118, 75, 162, 0.15)
+        );
+        border: 1px solid #e6e6ff;
+        padding: 18px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .cta-banner strong {
+        color: #2e2e2e;
+      }
 
       @media (max-width: 980px) {
-        .landing-hero { grid-template-columns: 1fr; }
-        .hero-title { font-size: 34px; }
-        .landing-features { grid-template-columns: repeat(2, minmax(0,1fr)); }
-        .steps { grid-template-columns: 1fr; }
-        .grid-3 { grid-template-columns: 1fr; }
-        .grid-2 { grid-template-columns: 1fr; }
-        .testimonials { grid-template-columns: 1fr; }
+        .landing-hero {
+          grid-template-columns: 1fr;
+        }
+        .hero-title {
+          font-size: 34px;
+        }
+        .landing-features {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .steps {
+          grid-template-columns: 1fr;
+        }
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+        .testimonials {
+          grid-template-columns: 1fr;
+        }
       }
       @media (max-width: 560px) {
-        .landing { padding: 22px; }
-        .landing-features { grid-template-columns: 1fr; }
+        .landing {
+          padding: 22px;
+        }
+        .landing-features {
+          grid-template-columns: 1fr;
+        }
       }
 
       .container {
@@ -208,19 +389,57 @@
 
       /* Tighter spacing/typography on small screens */
       @media (max-width: 768px) {
-        .container { padding: 16px; }
+        .container {
+          padding: 16px;
+        }
         /* Card-style rows on mobile */
-        .section { overflow-x: visible; }
-        table thead { display: none; }
-        #assetsTable, #liabilitiesTable { min-width: 0; width: 100%; }
-        table, tbody, tr, td { display: block; width: 100%; }
-        tbody tr { background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 10px 12px; margin: 12px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-        tbody tr td { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; white-space: normal; }
-        tbody tr td::before { content: attr(data-label); font-weight: 600; color: #555; margin-right: 12px; }
+        .section {
+          overflow-x: visible;
+        }
+        table thead {
+          display: none;
+        }
+        #assetsTable,
+        #liabilitiesTable {
+          min-width: 0;
+          width: 100%;
+        }
+        table,
+        tbody,
+        tr,
+        td {
+          display: block;
+          width: 100%;
+        }
+        tbody tr {
+          background: #fff;
+          border: 1px solid #eee;
+          border-radius: 10px;
+          padding: 10px 12px;
+          margin: 12px 0;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+        tbody tr td {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 8px 0;
+          white-space: normal;
+        }
+        tbody tr td::before {
+          content: attr(data-label);
+          font-weight: 600;
+          color: #555;
+          margin-right: 12px;
+        }
         tbody tr td input[type="text"],
         tbody tr td input[type="number"],
-        tbody tr td select { width: 55%; }
-        .btn.btn-delete { align-self: flex-start; }
+        tbody tr td select {
+          width: 55%;
+        }
+        .btn.btn-delete {
+          align-self: flex-start;
+        }
       }
 
       th {
@@ -244,7 +463,8 @@
       }
 
       /* Make the top date picker compact instead of full width */
-      #recordDate, .date-selector .flatpickr-input[type="text"] {
+      #recordDate,
+      .date-selector .flatpickr-input[type="text"] {
         width: 220px !important;
         display: inline-block;
       }
@@ -295,7 +515,9 @@
         color: #555;
         user-select: none;
       }
-      tr.dragging { opacity: 0.6; }
+      tr.dragging {
+        opacity: 0.6;
+      }
 
       /* Dropdown actions styling */
       .action-select {
@@ -334,7 +556,7 @@
 
       /* Calendar markers for days that have snapshots */
       .flatpickr-day.has-snapshot::after {
-        content: '';
+        content: "";
         position: absolute;
         width: 6px;
         height: 6px;
@@ -369,12 +591,26 @@
         background: #ffffff;
         padding: 12px 16px;
         border-radius: 10px;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
       }
-      .date-selector label { white-space: nowrap; color: #333; }
-      .date-selector .user-group { margin-left: auto; display: inline-flex; align-items: center; gap: 10px; }
-      .date-selector .user-info { color:#555; }
-      .currency-note { color:#666; font-size: 12px; margin-left:8px; }
+      .date-selector label {
+        white-space: nowrap;
+        color: #333;
+      }
+      .date-selector .user-group {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .date-selector .user-info {
+        color: #555;
+      }
+      .currency-note {
+        color: #666;
+        font-size: 12px;
+        margin-left: 8px;
+      }
       .date-selector input {
         margin: 0 10px;
         padding: 10px;
@@ -382,13 +618,24 @@
         border: 1px solid #ddd;
       }
       @media (max-width: 768px) {
-        .date-selector { flex-direction: column; align-items: stretch; gap: 8px; }
-        .date-selector label { align-self: flex-start; }
+        .date-selector {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 8px;
+        }
+        .date-selector label {
+          align-self: flex-start;
+        }
         .date-selector .flatpickr-input[type="text"],
         #recordDate,
         #compareDate,
-        .date-selector .btn { width: 100% !important; }
-        .currency-note { align-self:flex-start; margin-left:0; }
+        .date-selector .btn {
+          width: 100% !important;
+        }
+        .currency-note {
+          align-self: flex-start;
+          margin-left: 0;
+        }
       }
 
       .metrics-grid {
@@ -441,28 +688,36 @@
           <h1 class="hero-title">Financial Tracker — own your numbers</h1>
           <p class="hero-sub">
             Track assets and liabilities, see real equity, and measure progress
-            over time with beautiful snapshots and a clean net‑worth chart.
-            Your data stays yours, secured with Auth0.
+            over time with beautiful snapshots and a clean net‑worth chart. Your
+            data stays yours, secured with Auth0.
           </p>
 
           <div class="hero-cta">
             <button id="btn-login" class="btn">🔐 Sign in with Auth0</button>
-            <button id="btn-guest" class="btn btn-ghost">🧪 Try as Guest</button>
+            <button id="btn-guest" class="btn btn-ghost">
+              🧪 Try as Guest
+            </button>
           </div>
-          <div style="margin-top:6px"><small>No email required for guest mode — data isn’t saved.</small></div>
+          <div style="margin-top: 6px">
+            <small>No email required for guest mode — data isn’t saved.</small>
+          </div>
         </div>
         <div class="hero-media" aria-hidden="true">
-          <img alt="Financial Tracker screenshot"
-               src="assets/Screenshot 2025-09-04 at 4.07.55 PM.png"
-               onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=1400&auto=format&fit=crop';"
-               referrerpolicy="no-referrer" />
+          <img
+            alt="Financial Tracker screenshot"
+            src="assets/Screenshot 2025-09-04 at 4.07.55 PM.png"
+            onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=1400&auto=format&fit=crop';"
+            referrerpolicy="no-referrer"
+          />
         </div>
       </div>
 
       <div class="landing-features">
         <div class="feature-card">
           <h3><span class="feature-emoji">📊</span>Net Worth Overview</h3>
-          <p>Instant totals for assets, liabilities and equity with trend chart.</p>
+          <p>
+            Instant totals for assets, liabilities and equity with trend chart.
+          </p>
         </div>
         <div class="feature-card">
           <h3><span class="feature-emoji">🗓️</span>Monthly Snapshots</h3>
@@ -481,40 +736,64 @@
       <!-- How it works -->
       <div class="lp-section">
         <h2 class="lp-heading">How It Works</h2>
-        <p class="lp-sub">Three simple steps to keep your finances organized and understandable.</p>
+        <p class="lp-sub">
+          Three simple steps to keep your finances organized and understandable.
+        </p>
         <div class="steps">
           <div class="step">
             <h4>Add your assets</h4>
-            <p>Cash, accounts, investments, real estate — categorize them and add notes.</p>
+            <p>
+              Cash, accounts, investments, real estate — categorize them and add
+              notes.
+            </p>
           </div>
           <div class="step">
             <h4>Record liabilities</h4>
-            <p>Mortgages, auto loans, credit cards. See debt-to-assets ratio instantly.</p>
+            <p>
+              Mortgages, auto loans, credit cards. See debt-to-assets ratio
+              instantly.
+            </p>
           </div>
           <div class="step">
             <h4>Save a snapshot</h4>
-            <p>Pick a date, save, and compare changes month over month to stay on track.</p>
+            <p>
+              Pick a date, save, and compare changes month over month to stay on
+              track.
+            </p>
           </div>
         </div>
-      </div>
-
-      <!-- Big gallery screenshot using your attached image -->
-      <div class="lp-section">
-        <h2 class="lp-heading">Product Preview</h2>
-        <p class="lp-sub">A clean workspace that surfaces the numbers you need, without clutter.</p>
-        
       </div>
 
       <!-- Extra benefits -->
       <div class="lp-section">
         <h2 class="lp-heading">Why You’ll Love It</h2>
         <div class="grid-3">
-          <div class="lp-card"><h4>Drag & drop rows</h4><p>Reorder assets and debts to fit how you think.</p></div>
-          <div class="lp-card"><h4>Percent of total</h4><p>See each asset’s weight to quickly rebalance.</p></div>
-          <div class="lp-card"><h4>Compare any period</h4><p>Pick a date to compare — we show change automatically.</p></div>
-          <div class="lp-card"><h4>Mobile friendly</h4><p>Responsive layout converts tables into tidy cards.</p></div>
-          <div class="lp-card"><h4>Local first</h4><p>Data is saved in your browser; sync to cloud when signed in.</p></div>
-          <div class="lp-card"><h4>Export-ready</h4><p>Numbers are formatted consistently for pasting to spreadsheets.</p></div>
+          <div class="lp-card">
+            <h4>Drag & drop rows</h4>
+            <p>Reorder assets and debts to fit how you think.</p>
+          </div>
+          <div class="lp-card">
+            <h4>Percent of total</h4>
+            <p>See each asset’s weight to quickly rebalance.</p>
+          </div>
+          <div class="lp-card">
+            <h4>Compare any period</h4>
+            <p>Pick a date to compare — we show change automatically.</p>
+          </div>
+          <div class="lp-card">
+            <h4>Mobile friendly</h4>
+            <p>Responsive layout converts tables into tidy cards.</p>
+          </div>
+          <div class="lp-card">
+            <h4>Local first</h4>
+            <p>Data is saved in your browser; sync to cloud when signed in.</p>
+          </div>
+          <div class="lp-card">
+            <h4>Export-ready</h4>
+            <p>
+              Numbers are formatted consistently for pasting to spreadsheets.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -522,9 +801,15 @@
       <div class="lp-section">
         <h2 class="lp-heading">What People Say</h2>
         <div class="testimonials">
-          <div class="quote">“Exactly the level of detail I needed to track my net worth.”</div>
-          <div class="quote">“Snapshots make month‑over‑month reviews fast and motivating.”</div>
-          <div class="quote">“Clear, private, and simple — love the Auth0 sign‑in.”</div>
+          <div class="quote">
+            “Exactly the level of detail I needed to track my net worth.”
+          </div>
+          <div class="quote">
+            “Snapshots make month‑over‑month reviews fast and motivating.”
+          </div>
+          <div class="quote">
+            “Clear, private, and simple — love the Auth0 sign‑in.”
+          </div>
         </div>
       </div>
 
@@ -538,11 +823,17 @@
           </details>
           <details>
             <summary>What happens when I sign in?</summary>
-            <p>We securely sync your snapshots to the cloud so you can access them across devices.</p>
+            <p>
+              We securely sync your snapshots to the cloud so you can access
+              them across devices.
+            </p>
           </details>
           <details>
             <summary>Can I delete my data?</summary>
-            <p>Absolutely. You can delete any snapshot at any time from the Actions menu.</p>
+            <p>
+              Absolutely. You can delete any snapshot at any time from the
+              Actions menu.
+            </p>
           </details>
         </div>
       </div>
@@ -567,10 +858,14 @@
       <div class="date-selector">
         <label>Record Date:</label>
         <input type="text" id="recordDate" value="" placeholder="YYYY-MM-DD" />
-        <label style="margin-left:12px;">Compare From:</label>
+        <label style="margin-left: 12px">Compare From:</label>
         <input type="text" id="compareDate" value="" placeholder="YYYY-MM-DD" />
         <span class="currency-note">All amounts in CAD</span>
-        <select id="actionMenu" class="action-select" onchange="handleAction(this.value)">
+        <select
+          id="actionMenu"
+          class="action-select"
+          onchange="handleAction(this.value)"
+        >
           <option value="">⚙️ Actions…</option>
           <option value="load">🔄 Load Snapshot</option>
           <option value="save">💾 Save Snapshot</option>
@@ -578,7 +873,9 @@
         </select>
         <div class="user-group">
           <span class="user-info" id="user-info"></span>
-          <button id="btn-logout" class="btn" style="background:#555">🚪 Logout</button>
+          <button id="btn-logout" class="btn" style="background: #555">
+            🚪 Logout
+          </button>
         </div>
       </div>
 
@@ -600,7 +897,10 @@
           <div class="amount" id="debtRatio">0%</div>
         </div>
         <div class="card">
-          <h3>Assets Change <span id="periodChangeLeft">—</span> vs <span id="periodChangeRight">—</span></h3>
+          <h3>
+            Assets Change <span id="periodChangeLeft">—</span> vs
+            <span id="periodChangeRight">—</span>
+          </h3>
           <div class="amount" id="periodChange">$0</div>
         </div>
       </div>
@@ -774,9 +1074,7 @@
       <div class="section">
         <div class="section-title">
           <span>📉 Debts and Liabilities</span>
-          <button class="btn" onclick="addLiabilityRow()">
-            + Add Debt
-          </button>
+          <button class="btn" onclick="addLiabilityRow()">+ Add Debt</button>
         </div>
         <table id="liabilitiesTable">
           <thead>
@@ -868,8 +1166,6 @@
             <span id="totalDebt">$0</span>
           </div>
         </div>
-
-        
       </div>
 
       <div class="chart-container">
@@ -884,7 +1180,8 @@
         if (window.auth0 && window.auth0.createAuth0Client) return;
         await new Promise((resolve, reject) => {
           const s = document.createElement("script");
-          s.src = "https://cdn.auth0.com/js/auth0-spa-js/2.1/auth0-spa-js.production.js";
+          s.src =
+            "https://cdn.auth0.com/js/auth0-spa-js/2.1/auth0-spa-js.production.js";
           s.async = true;
           s.onload = () => resolve();
           s.onerror = () => reject(new Error("Auth0 SDK failed to load"));
@@ -913,7 +1210,10 @@
           landing.classList.add("hidden");
           app.classList.remove("hidden");
           const user = await auth0Client.getUser();
-          userInfo.textContent = user && (user.name || user.email) ? `Hello, ${user.name || user.email}` : "";
+          userInfo.textContent =
+            user && (user.name || user.email)
+              ? `Hello, ${user.name || user.email}`
+              : "";
           if (logoutBtn) logoutBtn.style.display = "inline-block";
           // If a different user signed in, reset local data to blank
           try {
@@ -922,11 +1222,16 @@
             if (newSub && newSub !== prevSub) {
               localStorage.setItem("lastUserSub", newSub);
               financialData = { snapshots: [] };
-              localStorage.setItem("financialData", JSON.stringify(financialData));
+              localStorage.setItem(
+                "financialData",
+                JSON.stringify(financialData)
+              );
               renderBlankState(true);
-              try { if (datePicker) datePicker.redraw(); } catch(_) {}
+              try {
+                if (datePicker) datePicker.redraw();
+              } catch (_) {}
             }
-          } catch(_) {}
+          } catch (_) {}
           // App became visible; ensure chart sizes and renders correctly
           requestAnimationFrame(() => updateChart());
         } else {
@@ -939,7 +1244,9 @@
 
       async function initAuth() {
         await loadAuth0Sdk();
-        const createClient = (window.auth0 && window.auth0.createAuth0Client) || window.createAuth0Client;
+        const createClient =
+          (window.auth0 && window.auth0.createAuth0Client) ||
+          window.createAuth0Client;
         auth0Client = await createClient({
           domain: authConfig.domain,
           clientId: authConfig.clientId,
@@ -954,7 +1261,11 @@
         const query = window.location.search;
         if (query.includes("code=") && query.includes("state=")) {
           await auth0Client.handleRedirectCallback();
-          window.history.replaceState({}, document.title, window.location.pathname);
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname
+          );
         }
 
         document.getElementById("btn-login").addEventListener("click", () => {
@@ -963,10 +1274,17 @@
         const guestBtn = document.getElementById("btn-guest");
         if (guestBtn) guestBtn.addEventListener("click", enterGuestMode);
         const legacyLogout = document.getElementById("btn-logout");
-        if (legacyLogout) legacyLogout.addEventListener("click", () => {
-          try { localStorage.removeItem("financialData"); } catch(_) {}
-          auth0Client.logout({ logoutParams: { returnTo: window.location.origin + "/financial_tracker.html" } });
-        });
+        if (legacyLogout)
+          legacyLogout.addEventListener("click", () => {
+            try {
+              localStorage.removeItem("financialData");
+            } catch (_) {}
+            auth0Client.logout({
+              logoutParams: {
+                returnTo: window.location.origin + "/financial_tracker.html",
+              },
+            });
+          });
 
         await updateUI();
 
@@ -992,8 +1310,9 @@
         if (userInfo) userInfo.textContent = "Guest";
         // Disable save/load/delete options in guest mode
         if (actionMenu) {
-          [...actionMenu.options].forEach(opt => {
-            if (["save","load","delete"].includes(opt.value)) opt.disabled = true;
+          [...actionMenu.options].forEach((opt) => {
+            if (["save", "load", "delete"].includes(opt.value))
+              opt.disabled = true;
           });
         }
         if (logoutBtn) logoutBtn.style.display = "none";
@@ -1004,7 +1323,7 @@
         requestAnimationFrame(() => updateChart());
       }
 
-    // Установка текущей даты
+      // Установка текущей даты
       document.getElementById("recordDate").value = new Date()
         .toISOString()
         .split("T")[0];
@@ -1012,7 +1331,11 @@
       let comparePicker = null;
       function initDatePicker() {
         if (!window.flatpickr) return;
-        if (datePicker) { try { datePicker.destroy(); } catch(_) {} }
+        if (datePicker) {
+          try {
+            datePicker.destroy();
+          } catch (_) {}
+        }
         datePicker = flatpickr("#recordDate", {
           dateFormat: "Y-m-d",
           altInput: true,
@@ -1024,14 +1347,14 @@
             input.value = dateStr;
             input.dispatchEvent(new Event("change"));
           },
-          onDayCreate: function(dObj, dStr, fp, dayElem) {
+          onDayCreate: function (dObj, dStr, fp, dayElem) {
             const d = dayElem.dateObj;
             const ymd = fp.formatDate(d, "Y-m-d");
             if ((financialData.snapshots || []).some((s) => s.date === ymd)) {
               dayElem.classList.add("has-snapshot");
             }
           },
-          onReady: function(selectedDates, dateStr, fp) {
+          onReady: function (selectedDates, dateStr, fp) {
             // Hide the original input to prevent full-width layout from global styles
             const orig = document.getElementById("recordDate");
             if (orig) {
@@ -1047,12 +1370,16 @@
                 alt.style.width = "220px";
                 alt.style.display = "inline-block";
               }
-            } catch(_) {}
-          }
+            } catch (_) {}
+          },
         });
 
         // Initialize compare picker
-        if (comparePicker) { try { comparePicker.destroy(); } catch(_) {} }
+        if (comparePicker) {
+          try {
+            comparePicker.destroy();
+          } catch (_) {}
+        }
         comparePicker = flatpickr("#compareDate", {
           dateFormat: "Y-m-d",
           altInput: true,
@@ -1064,14 +1391,14 @@
             input.value = dateStr;
             calculateTotals();
           },
-          onDayCreate: function(dObj, dStr, fp, dayElem) {
+          onDayCreate: function (dObj, dStr, fp, dayElem) {
             const d = dayElem.dateObj;
             const ymd = fp.formatDate(d, "Y-m-d");
             if ((financialData.snapshots || []).some((s) => s.date === ymd)) {
               dayElem.classList.add("has-snapshot");
             }
           },
-          onReady: function(selectedDates, dateStr, fp) {
+          onReady: function (selectedDates, dateStr, fp) {
             const orig = document.getElementById("compareDate");
             if (orig) {
               orig.style.position = "absolute";
@@ -1085,13 +1412,13 @@
                 alt.style.width = "220px";
                 alt.style.display = "inline-block";
               }
-            } catch(_) {}
-          }
+            } catch (_) {}
+          },
         });
       }
 
       // Хранилище данных
-  let financialData = JSON.parse(
+      let financialData = JSON.parse(
         localStorage.getItem("financialData") || '{"snapshots": []}'
       );
 
@@ -1136,20 +1463,38 @@
           row.innerHTML = `
             <td>
               <select>
-                <option ${a.category === 'Cash' ? 'selected' : ''}>Cash</option>
-                <option ${a.category === 'Bank Account' ? 'selected' : ''}>Bank Account</option>
-                <option ${a.category === 'Investments' ? 'selected' : ''}>Investments</option>
-                <option ${a.category === 'Real Estate' ? 'selected' : ''}>Real Estate</option>
-                <option ${a.category === 'Vehicle' ? 'selected' : ''}>Vehicle</option>
-                <option ${a.category === 'RRSP' ? 'selected' : ''}>RRSP</option>
-                <option ${a.category === 'TFSA' ? 'selected' : ''}>TFSA</option>
-                <option ${a.category === 'Other' ? 'selected' : ''}>Other</option>
+                <option ${a.category === "Cash" ? "selected" : ""}>Cash</option>
+                <option ${
+                  a.category === "Bank Account" ? "selected" : ""
+                }>Bank Account</option>
+                <option ${
+                  a.category === "Investments" ? "selected" : ""
+                }>Investments</option>
+                <option ${
+                  a.category === "Real Estate" ? "selected" : ""
+                }>Real Estate</option>
+                <option ${
+                  a.category === "Vehicle" ? "selected" : ""
+                }>Vehicle</option>
+                <option ${a.category === "RRSP" ? "selected" : ""}>RRSP</option>
+                <option ${a.category === "TFSA" ? "selected" : ""}>TFSA</option>
+                <option ${
+                  a.category === "Other" ? "selected" : ""
+                }>Other</option>
               </select>
             </td>
-            <td><input type="text" value="${(a.name || '').replace(/"/g, '&quot;')}" /></td>
-            <td><input class="amount-input" type="text" value="${formatThousands(a.amount || 0)}" onchange="calculateTotals()" /></td>
+            <td><input type="text" value="${(a.name || "").replace(
+              /"/g,
+              "&quot;"
+            )}" /></td>
+            <td><input class="amount-input" type="text" value="${formatThousands(
+              a.amount || 0
+            )}" onchange="calculateTotals()" /></td>
             <td class="percentage">0%</td>
-            <td><input type="text" value="${(a.note || '').replace(/"/g, '&quot;')}" /></td>
+            <td><input type="text" value="${(a.note || "").replace(
+              /"/g,
+              "&quot;"
+            )}" /></td>
             <td><span class="drag-handle" title="Drag to reorder">⇅</span><button class="btn btn-delete" onclick="deleteRow(this)">Delete</button></td>
           `;
         });
@@ -1160,18 +1505,36 @@
           row.innerHTML = `
             <td>
               <select>
-                <option ${l.type === 'Mortgage' ? 'selected' : ''}>Mortgage</option>
-                <option ${l.type === 'Car Loan' ? 'selected' : ''}>Car Loan</option>
-                <option ${l.type === 'Personal Loan' ? 'selected' : ''}>Personal Loan</option>
-                <option ${l.type === 'Credit Card' ? 'selected' : ''}>Credit Card</option>
-                <option ${l.type === 'Private Loan' ? 'selected' : ''}>Private Loan</option>
-                <option ${l.type === 'Other' ? 'selected' : ''}>Other</option>
+                <option ${
+                  l.type === "Mortgage" ? "selected" : ""
+                }>Mortgage</option>
+                <option ${
+                  l.type === "Car Loan" ? "selected" : ""
+                }>Car Loan</option>
+                <option ${
+                  l.type === "Personal Loan" ? "selected" : ""
+                }>Personal Loan</option>
+                <option ${
+                  l.type === "Credit Card" ? "selected" : ""
+                }>Credit Card</option>
+                <option ${
+                  l.type === "Private Loan" ? "selected" : ""
+                }>Private Loan</option>
+                <option ${l.type === "Other" ? "selected" : ""}>Other</option>
               </select>
             </td>
-            <td><input type="text" value="${(l.creditor || '').replace(/"/g, '&quot;')}" /></td>
-            <td><input class="amount-input" type="text" value="${formatThousands(l.amount || 0)}" onchange="calculateTotals()" /></td>
+            <td><input type="text" value="${(l.creditor || "").replace(
+              /"/g,
+              "&quot;"
+            )}" /></td>
+            <td><input class="amount-input" type="text" value="${formatThousands(
+              l.amount || 0
+            )}" onchange="calculateTotals()" /></td>
             <td><input type="number" value="${l.payment || 0}" /></td>
-            <td><input type="text" value="${(l.rate || '').replace(/"/g, '&quot;')}" /></td>
+            <td><input type="text" value="${(l.rate || "").replace(
+              /"/g,
+              "&quot;"
+            )}" /></td>
             <td><span class="drag-handle" title="Drag to reorder">⇅</span><button class="btn btn-delete" onclick="deleteRow(this)">Delete</button></td>
           `;
         });
@@ -1182,7 +1545,9 @@
         // Set date and recalc
         if (!keepCurrentDate && snapshot.date) {
           document.getElementById("recordDate").value = snapshot.date;
-          try { if (datePicker) datePicker.setDate(snapshot.date, false); } catch(_) {}
+          try {
+            if (datePicker) datePicker.setDate(snapshot.date, false);
+          } catch (_) {}
         }
         applyResponsiveLabels();
         initDragAndHandles();
@@ -1197,8 +1562,12 @@
         if (liabsTbody) liabsTbody.innerHTML = "";
         currentRenderedSnapshotDate = null;
         if (addOneRow) {
-          try { addAssetRow(); } catch(_) {}
-          try { addLiabilityRow(); } catch(_) {}
+          try {
+            addAssetRow();
+          } catch (_) {}
+          try {
+            addLiabilityRow();
+          } catch (_) {}
         }
         applyResponsiveLabels();
         initDragAndHandles();
@@ -1239,7 +1608,9 @@
       async function syncFromCloudAndRender() {
         const remote = await syncFromCloud();
         if (remote.length > 0) {
-          const latest = [...remote].sort((a, b) => (a.date > b.date ? 1 : a.date < b.date ? -1 : 0)).slice(-1)[0];
+          const latest = [...remote]
+            .sort((a, b) => (a.date > b.date ? 1 : a.date < b.date ? -1 : 0))
+            .slice(-1)[0];
           renderSnapshotToForm(latest);
           updateChart();
         } else {
@@ -1256,8 +1627,12 @@
         financialData.snapshots = remote;
         localStorage.setItem("financialData", JSON.stringify(financialData));
         // Refresh date picker markers
-        try { if (datePicker) datePicker.redraw(); } catch(_) {}
-        try { if (comparePicker) comparePicker.redraw(); } catch(_) {}
+        try {
+          if (datePicker) datePicker.redraw();
+        } catch (_) {}
+        try {
+          if (comparePicker) comparePicker.redraw();
+        } catch (_) {}
         return remote;
       }
 
@@ -1271,7 +1646,9 @@
       }
 
       function getNearestSnapshotForDate(date) {
-        const snaps = Array.isArray(financialData.snapshots) ? financialData.snapshots : [];
+        const snaps = Array.isArray(financialData.snapshots)
+          ? financialData.snapshots
+          : [];
         if (snaps.length === 0) return null;
         // Exact match
         const exact = snaps.find((s) => s.date === date);
@@ -1296,7 +1673,9 @@
       }
 
       function getPreviousSnapshotForDate(date) {
-        const snaps = Array.isArray(financialData.snapshots) ? financialData.snapshots : [];
+        const snaps = Array.isArray(financialData.snapshots)
+          ? financialData.snapshots
+          : [];
         const prior = snaps
           .filter((s) => s.date && s.date < date)
           .sort((a, b) => (a.date > b.date ? 1 : a.date < b.date ? -1 : 0))
@@ -1306,7 +1685,9 @@
 
       function getExactOrPriorSnapshotForDate(date) {
         if (!date) return null;
-        const snaps = Array.isArray(financialData.snapshots) ? financialData.snapshots : [];
+        const snaps = Array.isArray(financialData.snapshots)
+          ? financialData.snapshots
+          : [];
         const exact = snaps.find((s) => s.date === date);
         if (exact) return exact;
         return getPreviousSnapshotForDate(date);
@@ -1342,24 +1723,39 @@
         }
         const selectedDate = document.getElementById("recordDate").value;
         const displayed = currentRenderedSnapshotDate || "";
-        const hasDisplayed = (financialData.snapshots || []).some((s) => s.date === displayed);
-        const hasSelected = (financialData.snapshots || []).some((s) => s.date === selectedDate);
-        const target = hasDisplayed ? displayed : (hasSelected ? selectedDate : "");
+        const hasDisplayed = (financialData.snapshots || []).some(
+          (s) => s.date === displayed
+        );
+        const hasSelected = (financialData.snapshots || []).some(
+          (s) => s.date === selectedDate
+        );
+        const target = hasDisplayed
+          ? displayed
+          : hasSelected
+          ? selectedDate
+          : "";
         if (!target) {
           alert("No snapshot to delete for this date.");
           return;
         }
-        if (!confirm(`Delete snapshot for ${target}? This cannot be undone.`)) return;
+        if (!confirm(`Delete snapshot for ${target}? This cannot be undone.`))
+          return;
 
         // Remove locally
-        financialData.snapshots = (financialData.snapshots || []).filter((s) => s.date !== target);
+        financialData.snapshots = (financialData.snapshots || []).filter(
+          (s) => s.date !== target
+        );
         localStorage.setItem("financialData", JSON.stringify(financialData));
 
         // Delete from backend if authenticated
         try {
           if (auth0Client && (await auth0Client.isAuthenticated())) {
-            await apiFetch(`/snapshots/${encodeURIComponent(target)}`, { method: "DELETE" });
-            try { await syncFromCloud(); } catch (_) {}
+            await apiFetch(`/snapshots/${encodeURIComponent(target)}`, {
+              method: "DELETE",
+            });
+            try {
+              await syncFromCloud();
+            } catch (_) {}
           }
         } catch (e) {
           console.warn("Cloud delete failed:", e);
@@ -1372,8 +1768,12 @@
         } else {
           renderBlankState(true);
         }
-        try { if (datePicker) datePicker.redraw(); } catch(_) {}
-        try { if (comparePicker) comparePicker.redraw(); } catch(_) {}
+        try {
+          if (datePicker) datePicker.redraw();
+        } catch (_) {}
+        try {
+          if (comparePicker) comparePicker.redraw();
+        } catch (_) {}
         updateChart();
         alert(`Snapshot ${target} deleted.`);
       }
@@ -1474,7 +1874,11 @@
         tbody._dragSetup = true;
 
         tbody.addEventListener("mousedown", (e) => {
-          dragAllowed = !!(e.target && (e.target.classList.contains("drag-handle") || e.target.closest(".drag-handle")));
+          dragAllowed = !!(
+            e.target &&
+            (e.target.classList.contains("drag-handle") ||
+              e.target.closest(".drag-handle"))
+          );
         });
 
         let draggingRow = null;
@@ -1488,7 +1892,9 @@
           draggingRow = tr;
           tr.classList.add("dragging");
           e.dataTransfer.effectAllowed = "move";
-          try { e.dataTransfer.setData("text/plain", ""); } catch(_) {}
+          try {
+            e.dataTransfer.setData("text/plain", "");
+          } catch (_) {}
         });
 
         tbody.addEventListener("dragover", (e) => {
@@ -1532,7 +1938,9 @@
 
       function formatThousands(num) {
         try {
-          return new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(Number(num || 0)).replace(/,/g, " ");
+          return new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 })
+            .format(Number(num || 0))
+            .replace(/,/g, " ");
         } catch {
           return String(num || 0);
         }
@@ -1570,7 +1978,9 @@
 
           // Restore caret near where the user was typing
           const newPos = caretPosForDigits(formatted, leftDigits);
-          try { el.setSelectionRange(newPos, newPos); } catch(_) {}
+          try {
+            el.setSelectionRange(newPos, newPos);
+          } catch (_) {}
 
           // Live recompute totals and percentages
           calculateTotals();
@@ -1583,11 +1993,17 @@
       }
 
       function initAmountInputs() {
-        document.querySelectorAll('#assetsTable tbody tr td:nth-child(3) input, #liabilitiesTable tbody tr td:nth-child(3) input').forEach((input)=>{
-          try { input.type = 'text'; } catch(_) {}
-          input.classList.add('amount-input');
-          wireAmountInput(input);
-        });
+        document
+          .querySelectorAll(
+            "#assetsTable tbody tr td:nth-child(3) input, #liabilitiesTable tbody tr td:nth-child(3) input"
+          )
+          .forEach((input) => {
+            try {
+              input.type = "text";
+            } catch (_) {}
+            input.classList.add("amount-input");
+            wireAmountInput(input);
+          });
       }
 
       function calculateTotals() {
@@ -1605,10 +2021,16 @@
           totalAssets += amount;
 
           // Подсчет ликвидных активов
-          if (category === "Cash" || category === "Bank Account") liquidAssets += amount;
+          if (category === "Cash" || category === "Bank Account")
+            liquidAssets += amount;
 
           // Подсчет инвестиций
-          if (category === "RRSP" || category === "TFSA" || category === "Investments") investments += amount;
+          if (
+            category === "RRSP" ||
+            category === "TFSA" ||
+            category === "Investments"
+          )
+            investments += amount;
 
           // Стоимость дома
           if (category === "Real Estate") homeValue += amount;
@@ -1677,15 +2099,25 @@
         (function updateAssetsChangeVsPrev() {
           const selectedDate = document.getElementById("recordDate").value;
           const basisDate = currentRenderedSnapshotDate || selectedDate;
-          const chosenLeft = document.getElementById("compareDate")?.value || "";
-          const leftSnap = chosenLeft ? getExactOrPriorSnapshotForDate(chosenLeft) : getPreviousSnapshotForDate(basisDate);
-          const change = leftSnap ? totalAssets - (leftSnap.totalAssets || 0) : 0;
+          const chosenLeft =
+            document.getElementById("compareDate")?.value || "";
+          const leftSnap = chosenLeft
+            ? getExactOrPriorSnapshotForDate(chosenLeft)
+            : getPreviousSnapshotForDate(basisDate);
+          const change = leftSnap
+            ? totalAssets - (leftSnap.totalAssets || 0)
+            : 0;
           const el = document.getElementById("periodChange");
           el.textContent = (change >= 0 ? "+" : "") + formatCAD(change);
           el.className = change >= 0 ? "amount positive" : "amount negative";
           const leftEl = document.getElementById("periodChangeLeft");
           const rightEl = document.getElementById("periodChangeRight");
-          if (leftEl) leftEl.textContent = leftSnap ? formatDateDMY(leftSnap.date) : (chosenLeft ? formatDateDMY(chosenLeft) : "—");
+          if (leftEl)
+            leftEl.textContent = leftSnap
+              ? formatDateDMY(leftSnap.date)
+              : chosenLeft
+              ? formatDateDMY(chosenLeft)
+              : "—";
           if (rightEl) rightEl.textContent = formatDateDMY(basisDate);
         })();
       }
@@ -1750,7 +2182,9 @@
         };
 
         // Upsert into local list by date
-        const existingIdx = (financialData.snapshots || []).findIndex((s) => s.date === date);
+        const existingIdx = (financialData.snapshots || []).findIndex(
+          (s) => s.date === date
+        );
         if (existingIdx >= 0) {
           financialData.snapshots[existingIdx] = snapshot;
         } else {
@@ -1767,7 +2201,9 @@
               body: JSON.stringify({ snapshot }),
             });
             // Refresh local cache from cloud to ensure consistency
-            try { await syncFromCloud(); } catch (_) {}
+            try {
+              await syncFromCloud();
+            } catch (_) {}
             cloudMsg = " Synced to cloud.";
           }
         } catch (e) {
@@ -1776,31 +2212,50 @@
         }
 
         alert("Data saved successfully!" + cloudMsg);
-        try { if (datePicker) datePicker.redraw(); } catch(_) {}
+        try {
+          if (datePicker) datePicker.redraw();
+        } catch (_) {}
         updateChart();
       }
 
       // Handle actions dropdown
       function handleAction(val) {
-        const select = document.getElementById('actionMenu');
-        try { select.value = ''; } catch(_) {}
+        const select = document.getElementById("actionMenu");
+        try {
+          select.value = "";
+        } catch (_) {}
         if (!val) return;
-        if (val === 'load') {
-          if (GUEST_MODE) { alert('Guest mode: loading is disabled.'); return; }
+        if (val === "load") {
+          if (GUEST_MODE) {
+            alert("Guest mode: loading is disabled.");
+            return;
+          }
           return loadSnapshot();
         }
-        if (val === 'save') {
-          if (GUEST_MODE) { alert('Guest mode: saving is disabled.'); return; }
+        if (val === "save") {
+          if (GUEST_MODE) {
+            alert("Guest mode: saving is disabled.");
+            return;
+          }
           return saveSnapshot();
         }
-        if (val === 'delete') {
-          if (GUEST_MODE) { alert('Guest mode: delete is disabled.'); return; }
+        if (val === "delete") {
+          if (GUEST_MODE) {
+            alert("Guest mode: delete is disabled.");
+            return;
+          }
           return deleteSnapshot();
         }
-        if (val === 'logout') {
-          if (typeof auth0Client !== 'undefined' && auth0Client) {
-            try { localStorage.removeItem('financialData'); } catch(_) {}
-            return auth0Client.logout({ logoutParams: { returnTo: window.location.origin + '/financial_tracker.html' } });
+        if (val === "logout") {
+          if (typeof auth0Client !== "undefined" && auth0Client) {
+            try {
+              localStorage.removeItem("financialData");
+            } catch (_) {}
+            return auth0Client.logout({
+              logoutParams: {
+                returnTo: window.location.origin + "/financial_tracker.html",
+              },
+            });
           }
         }
       }
@@ -1857,7 +2312,11 @@
                 title: { display: true, text: "$" },
                 ticks: {
                   callback: (v) => {
-                    try { return formatCAD(v); } catch { return v; }
+                    try {
+                      return formatCAD(v);
+                    } catch {
+                      return v;
+                    }
                   },
                 },
               },
@@ -1910,14 +2369,22 @@
         initDragAndHandles();
         calculateTotals();
         updateChart();
-        try { await initAuth(); } catch (e) { console.error(e); }
+        try {
+          await initAuth();
+        } catch (e) {
+          console.error(e);
+        }
         // Safety: delegate input events for any amount field not wired yet
-        document.addEventListener('input', (e) => {
-          const t = e.target;
-          if (t && t.classList && t.classList.contains('amount-input')) {
-            wireAmountInput(t);
-          }
-        }, { passive: true });
+        document.addEventListener(
+          "input",
+          (e) => {
+            const t = e.target;
+            if (t && t.classList && t.classList.contains("amount-input")) {
+              wireAmountInput(t);
+            }
+          },
+          { passive: true }
+        );
       });
     </script>
   </body>
