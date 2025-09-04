@@ -308,6 +308,7 @@
         box-shadow: 0 4px 14px rgba(0,0,0,0.06);
       }
       .date-selector label { white-space: nowrap; color: #333; }
+      .date-selector .user-info { margin-left: auto; margin-right: 8px; color:#555; }
       .currency-note { color:#666; font-size: 12px; margin-left:8px; }
       .date-selector input {
         margin: 0 10px;
@@ -386,14 +387,13 @@
         <label style="margin-left:12px;">Compare From:</label>
         <input type="text" id="compareDate" value="" placeholder="YYYY-MM-DD" />
         <span class="currency-note">All amounts in CAD</span>
-        <span style="margin:0 10px; color:#555" id="user-info"></span>
+        <span class="user-info" id="user-info"></span>
         <button id="btn-logout" class="btn" style="background:#555">🚪 Logout</button>
         <select id="actionMenu" class="action-select" onchange="handleAction(this.value)">
           <option value="">⚙️ Actions…</option>
           <option value="load">🔄 Load Snapshot</option>
           <option value="save">💾 Save Snapshot</option>
           <option value="delete">🗑️ Delete Snapshot</option>
-          <option value="logout">🚪 Logout</option>
         </select>
       </div>
 
@@ -1726,6 +1726,13 @@
         calculateTotals();
         updateChart();
         try { await initAuth(); } catch (e) { console.error(e); }
+        // Safety: delegate input events for any amount field not wired yet
+        document.addEventListener('input', (e) => {
+          const t = e.target;
+          if (t && t.classList && t.classList.contains('amount-input')) {
+            wireAmountInput(t);
+          }
+        }, { passive: true });
       });
     </script>
   </body>
