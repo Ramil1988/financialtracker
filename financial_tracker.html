@@ -31,9 +31,8 @@
 
       /* Landing page shell */
       .landing {
-        max-width: none;
-        width: 100%;
-        margin: 5vh 0 0;
+        max-width: 1100px;
+        margin: 5vh auto 0;
         background: radial-gradient(
             1200px 600px at 10% -20%,
             rgba(118, 75, 162, 0.2),
@@ -182,18 +181,8 @@
         font-size: 16px;
         margin-bottom: 6px;
       }
-      .steps {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 16px;
-      }
-      .step {
-        background: #fff;
-        border: 1px solid #eee;
-        border-radius: 14px;
-        padding: 16px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-      }
+      .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+      .step { background: #fff; border: 1px solid #eee; border-radius: 14px; padding: 16px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06); }
       .gallery {
         background: #fafbff;
         border: 1px solid #ececff;
@@ -731,10 +720,10 @@
         <div class="feature-card">
           <h3><span class="feature-emoji">🧮</span>Flexible Categories</h3>
           <p>Track cash, investments, real estate, loans, and more.</p>
-        </div>
       </div>
+    </div>
 
-      <!-- How it works -->
+    <!-- How it works -->
       <div class="lp-section">
         <h2 class="lp-heading">How It Works</h2>
         <p class="lp-sub">
@@ -762,10 +751,16 @@
               track.
             </p>
           </div>
-        </div>
       </div>
+    </div>
 
-      <!-- Extra benefits -->
+    <!-- Big gallery screenshot removed as requested; keep section text-only -->
+    <div class="lp-section">
+      <h2 class="lp-heading">Product Preview</h2>
+      <p class="lp-sub">A clean workspace that surfaces the numbers you need, without clutter.</p>
+    </div>
+
+    <!-- Extra benefits -->
       <div class="lp-section">
         <h2 class="lp-heading">Why You’ll Love It</h2>
         <div class="grid-3">
