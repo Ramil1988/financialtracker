@@ -867,6 +867,7 @@
           <option value="save">💾 Save Snapshot</option>
           <option value="delete">🗑️ Delete Snapshot</option>
         </select>
+        <button id="btn-back-landing" class="btn btn-ghost" onclick="goToLanding()" style="margin-left:8px">← Back to Landing</button>
         <div class="user-group">
           <span class="user-info" id="user-info"></span>
           <button id="btn-logout" class="btn" style="background: #555">
@@ -1317,6 +1318,27 @@
         renderBlankState(true);
         initDatePicker();
         requestAnimationFrame(() => updateChart());
+      }
+
+      function goToLanding() {
+        // Return to landing without logging out
+        const landing = document.getElementById("auth-landing");
+        const app = document.getElementById("app-container");
+        const userInfo = document.getElementById("user-info");
+        const actionMenu = document.getElementById("actionMenu");
+        if (GUEST_MODE) {
+          // Re-enable disabled options when exiting guest mode
+          if (actionMenu) {
+            [...actionMenu.options].forEach((opt) => {
+              if (["save", "load", "delete"].includes(opt.value)) opt.disabled = false;
+            });
+            actionMenu.value = "";
+          }
+          GUEST_MODE = false;
+        }
+        app.classList.add("hidden");
+        landing.classList.remove("hidden");
+        if (userInfo) userInfo.textContent = "";
       }
 
       // Установка текущей даты
