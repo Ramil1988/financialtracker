@@ -181,8 +181,18 @@
         font-size: 16px;
         margin-bottom: 6px;
       }
-      .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-      .step { background: #fff; border: 1px solid #eee; border-radius: 14px; padding: 16px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06); }
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .step {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      }
       .gallery {
         background: #fafbff;
         border: 1px solid #ececff;
@@ -720,10 +730,10 @@
         <div class="feature-card">
           <h3><span class="feature-emoji">🧮</span>Flexible Categories</h3>
           <p>Track cash, investments, real estate, loans, and more.</p>
+        </div>
       </div>
-    </div>
 
-    <!-- How it works -->
+      <!-- How it works -->
       <div class="lp-section">
         <h2 class="lp-heading">How It Works</h2>
         <p class="lp-sub">
@@ -751,16 +761,18 @@
               track.
             </p>
           </div>
+        </div>
       </div>
-    </div>
 
-    <!-- Big gallery screenshot removed as requested; keep section text-only -->
-    <div class="lp-section">
-      <h2 class="lp-heading">Product Preview</h2>
-      <p class="lp-sub">A clean workspace that surfaces the numbers you need, without clutter.</p>
-    </div>
+      <!-- Big gallery screenshot removed as requested; keep section text-only -->
+      <div class="lp-section">
+        <h2 class="lp-heading">Product Preview</h2>
+        <p class="lp-sub">
+          A clean workspace that surfaces the numbers you need, without clutter.
+        </p>
+      </div>
 
-    <!-- Extra benefits -->
+      <!-- Extra benefits -->
       <div class="lp-section">
         <h2 class="lp-heading">Why You’ll Love It</h2>
         <div class="grid-3">
@@ -867,7 +879,14 @@
           <option value="save">💾 Save Snapshot</option>
           <option value="delete">🗑️ Delete Snapshot</option>
         </select>
-        <button id="btn-back-landing" class="btn btn-ghost" onclick="goToLanding()" style="margin-left:8px">← Back to Landing</button>
+        <button
+          id="btn-back-landing"
+          class="btn btn-ghost"
+          onclick="goToLanding()"
+          style="margin-left: 8px"
+        >
+          ← Back
+        </button>
         <div class="user-group">
           <span class="user-info" id="user-info"></span>
           <button id="btn-logout" class="btn" style="background: #555">
@@ -1330,7 +1349,8 @@
           // Re-enable disabled options when exiting guest mode
           if (actionMenu) {
             [...actionMenu.options].forEach((opt) => {
-              if (["save", "load", "delete"].includes(opt.value)) opt.disabled = false;
+              if (["save", "load", "delete"].includes(opt.value))
+                opt.disabled = false;
             });
             actionMenu.value = "";
           }
